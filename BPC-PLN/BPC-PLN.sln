@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35506.116 d17.12
+VisualStudioVersion = 17.12.35506.116
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BPC-PLN-Web", "BPC-PLN-Web\BPC-PLN-Web.csproj", "{576983DB-9867-4582-BFEA-4F4A97A09FE7}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "Data\Data.csproj", "{208942C7-C251-4665-9734-CA71E5FFB764}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{A374F200-E988-4A6A-B5E5-65B1DC6AAD5B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PLN-SPA", "PLN-SPA\PLN-SPA.csproj", "{3A60CC31-3C93-4C5C-8355-AD84A12B87D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{A374F200-E988-4A6A-B5E5-65B1DC6AAD5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A374F200-E988-4A6A-B5E5-65B1DC6AAD5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A374F200-E988-4A6A-B5E5-65B1DC6AAD5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A60CC31-3C93-4C5C-8355-AD84A12B87D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A60CC31-3C93-4C5C-8355-AD84A12B87D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A60CC31-3C93-4C5C-8355-AD84A12B87D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A60CC31-3C93-4C5C-8355-AD84A12B87D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
