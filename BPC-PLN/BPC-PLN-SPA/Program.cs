@@ -1,6 +1,8 @@
-using PLN_SPA.Components;
+using BPC_PLN_SPA.Components;
+using Data.Reposirory;
+using Domain.IRipository;
 
-namespace PLN_SPA
+namespace BPC_PLN_SPA
 {
     public class Program
     {
@@ -11,7 +13,13 @@ namespace PLN_SPA
             // Add services to the container.
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
+            #region IOC
+            builder.Services.AddSingleton<IReposiroryCharge, ReposiroryCharge>();
+            builder.Services.AddSingleton<IDispatchRipository, DispatchRipository>();
 
+
+
+            #endregion
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

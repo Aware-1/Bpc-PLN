@@ -1,22 +1,39 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Runtime.InteropServices;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities.Dispatch
 {
+    [Table("PLN_Dispatch")]
     public class Dispatch
     {
-        [Display("")]
-        [Display("")]
-        [Display("")]
-        [Display("")]
-        [Display("")]
-        [Display("")]
-        [Display("")]
-        [Display("")]
-        [Display("")]
-        [Display("")]
+        [Display(Name = "شماره سفارش")]// بپرسم چه شکلیه؟
+        public string DispatchID { get; set; }
+        public DispatchTypes DispatchType { get; set; } = 0;
+        [Display(Name = "کد کالا")]
+        public string ProductCode { get; set; }
+        //[Display(Name = "شرح کالا")]
+        //public string ProductDescription { get; set; }
+        [Display(Name = "تن")]
+        public string tnDispatch { get; set; } // بپرسم چه شکلیه؟
 
 
 
+        [Display(Name = "کد شعبه")]
+        public string BranchCode { get; set; }
+        //[Display(Name = "نام شعبه")]
+        //public string BranchName { get; set; }
+
+
+        [Display(Name = "کد مشتری")]
+        public string CustomerCode { get; set; }
+        //[Display(Name = "نام مشتری")]
+        //public string CustomerName { get; set; }
+    }
+
+    public enum DispatchTypes
+    {
+        [Display(Name = "شارژکل")] All = 0,
+        [Display(Name = "شعبه")] Brench = 1,
+        [Display(Name = "مشتری")] Customer = 2
     }
 }

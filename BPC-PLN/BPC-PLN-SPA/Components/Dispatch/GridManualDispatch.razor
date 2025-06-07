@@ -1,0 +1,64 @@
+﻿@using Domain.Entities.Dispatch;
+
+
+
+<EditForm Model="dispatchVM" OnSubmit="HandleSubmit">
+    <div class="container mt-4">
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="col-1">کد کالا</th>
+                        <th class="col-6">شرح کالا</th>
+                        <th class="col-1">کد شعبه</th>
+                        <th class="col-1">نام شعبه</th>
+                        <th class="col-3">تن (ناخالصی)</th>
+                    </tr>
+                </thead>
+                <tbody>       
+                    <tr>
+                        <td><input type="text" class="form-control" /></td>
+                        <td>...</td>
+                        <td><input type="text" class="form-control" /></td>
+                        <td>...</td>
+                        <td>...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-success px-4">ارسال</button>
+        </div>
+    </div>
+</EditForm>
+
+
+
+
+
+@code{
+    [Parameter]
+    public string? Code { get; set; }
+    [Parameter]
+    public DispatchTypes? Type { get; set; }
+
+
+
+    Dispatch dispatchVM = new Dispatch { };
+
+
+
+
+
+
+
+
+
+    protected async Task HandleSubmit()
+    {
+        Console.WriteLine($"Type: ");
+    }
+
+
+}

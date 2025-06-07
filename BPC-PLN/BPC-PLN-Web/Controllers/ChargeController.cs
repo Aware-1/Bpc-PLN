@@ -16,12 +16,5 @@ namespace BPC_PLN_Web.Controllers
 
             return View();
         }
-
-        [HttpPost]
-        public IActionResult Index([FromBody] List<> employees)
-        {
-            _employees = employees;
-            return Ok(new { message = "اطلاعات ذخیره شد!" });
-        }
     }
 }
