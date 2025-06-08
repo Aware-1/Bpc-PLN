@@ -4,25 +4,21 @@
 <PageTitle>حواله دستی</PageTitle>
 <div class="container mt-5">
     <h3 class="text-center mb-4">فرم حواله</h3>
-
    
         <div class="row mb-3">
-            <!-- Dropdown for Dispatch Type -->
+
             <div class="col-4">
                 <label for="dispatchType" class="form-label">نوع حواله:</label>
-                <select id="dispatchType" @oninput="OnDispatchTypeChange" class="form-select">
-                @* <select id="dispatchType" @bind="selectedType" class="form-select"> *@
+                <select id="dispatchType" @onchange="OnDispatchTypeChange" class="form-select">
                     @foreach (var type in dispatchTypes)
                     {<option value="@type">@GetEnumDisplayName(type)</option>}
                 </select>
             </div>
 
-            <!-- Input for Code -->
             <div class="col-4">
                 <label class="form-label">@labelText</label>
-            <input type="text" disabled="@IsDisabled" @bind="inputCode" @oninput="FetchName" placeholder="کد را وارد کنید..." class="form-control" />
+            <input type="text" disabled="@IsDisabled" value="@inputCode" @onchange="FetchName" placeholder="کد را وارد کنید..." class="form-control" />
             </div>
-
             
             <div class="col-4">
                 <label class="form-label">نام:</label>
@@ -30,9 +26,7 @@
             </div>
         </div>
 
-
-            <!-- یهویی بیاد -->
-    <GridManualDispatch Code="inputCode" Type="selectedType" />
+    <GridManualDispatch Type="selectedType" FetchedName="@fetchedName" @bind-Value="@inputCode" />
     
 </div>
 

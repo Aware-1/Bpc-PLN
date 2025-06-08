@@ -6,12 +6,12 @@ namespace Data.Reposirory
     {
         public async Task<string> GetBranchNameByCodeAsync(string code)
         {
-            return "سیرلذشسذرلسذرش";
+            return "تهران غرب";
         }
 
         public async Task<string> GetCustomerNameByCodeAsync(string code)
         {
-            return "sdvosvm";
+            return "Tehronas";
         }
     }
 }

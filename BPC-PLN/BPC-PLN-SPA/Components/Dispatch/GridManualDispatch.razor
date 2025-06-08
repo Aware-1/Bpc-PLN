@@ -1,5 +1,4 @@
-﻿@using Domain.Entities.Dispatch;
-
+﻿@inherits GridManualDispatchComponent
 
 
 <EditForm Model="dispatchVM" OnSubmit="HandleSubmit">
@@ -10,19 +9,25 @@
                     <tr>
                         <th class="col-1">کد کالا</th>
                         <th class="col-6">شرح کالا</th>
-                        <th class="col-1">کد شعبه</th>
+                        <th class="col-1">@GetBranchColumnHeader()</th>
                         <th class="col-1">نام شعبه</th>
                         <th class="col-3">تن (ناخالصی)</th>
                     </tr>
                 </thead>
-                <tbody>       
-                    <tr>
-                        <td><input type="text" class="form-control" /></td>
-                        <td>...</td>
-                        <td><input type="text" class="form-control" /></td>
-                        <td>...</td>
-                        <td>...</td>
-                    </tr>
+                <tbody>
+                    @foreach (var dispatch in DispatchList)
+                    {
+                        <tr>
+                            <td><input @onchange="FetchProductName" type="text" class="form-control" /></td>
+                            <td>@FetchedProductName</td>
+                            <td>
+                                <input @bind="Value" @bind:event="oninput" @onchange="FetchName"
+                                disabled="@IsBranchInputDisabled()" type="text" class="form-control" />
+                            </td>
+                            <td>@FetchedName</td>
+                            <td>...</td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>
@@ -34,31 +39,3 @@
 </EditForm>
 
 
-
-
-
-@code{
-    [Parameter]
-    public string? Code { get; set; }
-    [Parameter]
-    public DispatchTypes? Type { get; set; }
-
-
-
-    Dispatch dispatchVM = new Dispatch { };
-
-
-
-
-
-
-
-
-
-    protected async Task HandleSubmit()
-    {
-        Console.WriteLine($"Type: ");
-    }
-
-
-}
