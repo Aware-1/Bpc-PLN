@@ -1,4 +1,5 @@
-﻿using Domain.IRipository;
+﻿using Domain.Dtos;
+using Domain.IRipository;
 
 namespace Data.Reposirory
 {
@@ -12,6 +13,11 @@ namespace Data.Reposirory
         public async Task<string> GetCustomerNameByCodeAsync(string code)
         {
             return "Tehronas";
+        }
+
+        public Task<bool> SubmitDispatchRowsAsync(List<GridManualDispatchVM> dispatches)
+        {
+            return Task.FromResult(true);
         }
     }
 }

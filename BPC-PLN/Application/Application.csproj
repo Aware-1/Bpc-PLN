@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Convertor\" />
     <Folder Include="ExtentionMethod\" />
     <Folder Include="Generator\" />
     <Folder Include="Security\" />

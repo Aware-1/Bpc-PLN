@@ -15,18 +15,22 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var dispatch in DispatchList)
+                    @if (DispatchList.Count > 0)
                     {
-                        <tr>
-                            <td><input @onchange="FetchProductName" type="text" class="form-control" /></td>
-                            <td>@FetchedProductName</td>
-                            <td>
-                                <input @bind="Value" @bind:event="oninput" @onchange="FetchName"
-                                disabled="@IsBranchInputDisabled()" type="text" class="form-control" />
-                            </td>
-                            <td>@FetchedName</td>
-                            <td>...</td>
-                        </tr>
+                        @foreach (var dispatch in DispatchList)
+                        {
+                            <tr>
+                                <td>
+                                    <input @bind="dispatch.ProductCode" @bind:event="oninput" @onchange="() => FetchProductName(dispatch)" type="text" class="form-control" />
+                                </td>
+                                <td>@dispatch.ProductDescription</td>
+                                <td>
+                                    <input @bind="dispatch.BranchCode" @bind:event="oninput" @onchange="() => FetchBranchName(dispatch)" type="text" class="form-control" disabled="@IsBranchInputDisabled(Type.Value)" />
+                                </td>
+                                <td>@dispatch.BranchName</td>
+                                <td>@dispatch.tnDispatch</td>
+                            </tr>
+                        }
                     }
                 </tbody>
             </table>

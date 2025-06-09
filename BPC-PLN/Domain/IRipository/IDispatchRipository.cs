@@ -1,4 +1,5 @@
-﻿using Domain.Entities.Dispatch;
+﻿using Domain.Dtos;
+using Domain.Entities.Dispatch;
 
 namespace Domain.IRipository
 {
@@ -6,6 +7,6 @@ namespace Domain.IRipository
     {
         Task<string> GetCustomerNameByCodeAsync(string code);
         Task<string> GetBranchNameByCodeAsync(string code);
-        Task<bool> SubmitDispatchRowsAsync(List<Dispatch> dispatches);
+        Task<bool> SubmitDispatchRowsAsync(List<GridManualDispatchVM> dispatches);
     }
 }

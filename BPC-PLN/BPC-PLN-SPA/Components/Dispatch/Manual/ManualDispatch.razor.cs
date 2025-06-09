@@ -16,7 +16,19 @@ namespace BPC_PLN_SPA.Components.Dispatch
         protected string inputCode { get; set; }
         protected string fetchedName;
 
-        protected bool IsDisabled => selectedType == DispatchTypes.All;
+
+        public DispatchTypes SelectedType
+        {
+            get => selectedType;
+            set
+            {
+                selectedType = value;
+                IsDisabled = selectedType == DispatchTypes.All;
+            }
+        }
+        protected bool IsDisabled { get; set; } = true;
+
+
         protected string labelText => selectedType switch
         {
             DispatchTypes.All => "در جدول وارد کنید",
@@ -28,7 +40,7 @@ namespace BPC_PLN_SPA.Components.Dispatch
         {
             if (Enum.TryParse(e.Value.ToString(), out DispatchTypes newType))
             {
-                selectedType = newType;
+                SelectedType = newType;
                 inputCode = fetchedName = selectedType == DispatchTypes.All ? string.Empty : inputCode = fetchedName;
                 StateHasChanged();
             }
@@ -55,11 +67,13 @@ namespace BPC_PLN_SPA.Components.Dispatch
                     DispatchTypes.Customer => await _dispatchRipository.GetCustomerNameByCodeAsync(inputCode),
                     DispatchTypes.All => "..."
                 };
+               
             }
             else
             {
                 fetchedName = string.Empty;
             }
+            IsDisabled = true;
             StateHasChanged();
         }
     }
