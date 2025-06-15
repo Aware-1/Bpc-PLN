@@ -2,31 +2,35 @@
 @inherits ManualDispatchComponent
 
 <PageTitle>حواله دستی</PageTitle>
-<div class="container mt-5">
-    <h3 class="text-center mb-4">فرم حواله</h3>
-   
-        <div class="row mb-3">
+<h3 class="text-center mb-4">فرم حواله</h3>
+<hr />
 
-            <div class="col-4">
-                <label for="dispatchType" class="form-label">نوع حواله:</label>
-                <select id="dispatchType" @onchange="OnDispatchTypeChange" class="form-select">
-                    @foreach (var type in dispatchTypes)
-                    {<option value="@type">@GetEnumDisplayName(type)</option>}
-                </select>
-            </div>
+<div class="container">
 
-            <div class="col-4">
-                <label class="form-label">@labelText</label>
-            <input type="text" disabled="@IsDisabled" value="@inputCode" @onchange="FetchName" placeholder="کد را وارد کنید..." class="form-control" />
-            </div>
-            
-            <div class="col-4">
-                <label class="form-label">نام:</label>
-                <input type="text" class="form-control" value="@fetchedName" disabled />
-            </div>
+    <div class="row mb-3">
+
+        <div class="col-4">
+            <label for="dispatchType" class="form-label">نوع حواله:</label>
+            <select id="dispatchType" @onchange="@OnDispatchTypeChange" class="form-select">
+                @foreach (var type in dispatchTypes)
+                {
+                    <option value="@type">@GetEnumDisplayName(type)</option>
+                }
+            </select>
         </div>
 
-    <GridManualDispatch Type="selectedType" FetchedBranchName="@fetchedName" @bind-Value="@inputCode" />
-    
+        <div class="col-4">
+            <label class="form-label">@labelText</label>
+            <input type="text" disabled="@IsDisabled" value="@inputCode" @onchange="@FetchName" placeholder="کد را وارد کنید..." class="form-control" />
+        </div>
+
+        <div class="col-4">
+            <label class="form-label">نام:</label>
+            <input type="text" class="form-control" value="@fetchedName" disabled />
+        </div>
+    </div>
+
+    <GridManualDispatch Type="SelectedType" FetchedBranchName="@fetchedName" @bind-Value="@inputCode" />
+
 </div>
 

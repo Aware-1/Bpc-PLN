@@ -11,12 +11,14 @@
                         <th class="col-6">شرح کالا</th>
                         <th class="col-1">@GetBranchColumnHeader()</th>
                         <th class="col-1">نام شعبه</th>
-                        <th class="col-3">تن (ناخالصی)</th>
+                        <th class="col-1">تعداد</th>
+                        <th class="col-2">تن (ناخالصی)</th>
                     </tr>
                 </thead>
                 <tbody>
                     @if (DispatchList.Count > 0)
                     {
+                        
                         @foreach (var dispatch in DispatchList)
                         {
                             <tr>
@@ -28,6 +30,9 @@
                                     <input @bind="dispatch.BranchCode" @bind:event="oninput" @onchange="() => FetchBranchName(dispatch)" type="text" class="form-control" disabled="@IsBranchInputDisabled(Type.Value)" />
                                 </td>
                                 <td>@dispatch.BranchName</td>
+                                <td>
+                                    <input @bind="dispatch.Count"type="text" class="form-control" />
+                                </td>
                                 <td>@dispatch.tnDispatch</td>
                             </tr>
                         }

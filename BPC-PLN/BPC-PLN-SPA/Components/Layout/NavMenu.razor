@@ -1,6 +1,6 @@
 ﻿<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">BPC-PLANNIG</a>
+        <a class="navbar-brand" href="https://behpakhsh.co/">PLANNIG</a>
     </div>
 </div>
 
@@ -10,17 +10,63 @@
     <nav class="nav flex-column">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="manualDispatch" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> حواله دستی
+                حواله دستی
             </NavLink>
         </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="ImportDispatch" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> اکسل حواله
+                اکسل حواله
             </NavLink>
         </div>
-        
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="1" Match="NavLinkMatch.All">
+                اطلاعات شعب
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="2" Match="NavLinkMatch.All">
+                خواست های شعب
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="3" Match="NavLinkMatch.All">
+                اطلاعات  فروش
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="4" Match="NavLinkMatch.All">
+                TAP-Plan
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="5" Match="NavLinkMatch.All">
+                اطلاعات پایه
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="#" @onclick="ToggleMenu" style="cursor: pointer;">
+                مدیریت کاربران
+            </NavLink>
+        </div>
+
+        @if (isExpanded)
+        {
+            <div class="sub-menu">
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="log">لاگ</NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link " href="permission">دسترسی کاربران</NavLink>
+                </div>
+            </div>
+        }
     </nav>
 </div>
 @code {
-  
+    private bool isExpanded = false;
+
+    private void ToggleMenu()
+    {
+        isExpanded = !isExpanded;
+    }
 }

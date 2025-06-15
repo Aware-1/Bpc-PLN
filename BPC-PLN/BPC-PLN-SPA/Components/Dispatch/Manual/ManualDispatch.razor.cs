@@ -12,10 +12,10 @@ namespace BPC_PLN_SPA.Components.Dispatch
         [Inject]
         private IDispatchRipository _dispatchRipository { get; set; }
 
-        protected DispatchTypes selectedType;
         protected string inputCode { get; set; }
         protected string fetchedName;
 
+        protected DispatchTypes selectedType;
 
         public DispatchTypes SelectedType
         {

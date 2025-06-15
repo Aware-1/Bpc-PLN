@@ -5,7 +5,7 @@ namespace Domain.Dtos
 {
     public class GridManualDispatchVM
     {
-        [Display(Name = "شماره سفارش")]// بپرسم چه شکلیه؟
+        [Display(Name = "شماره سفارش")] // بپرسم چه شکلیه؟
         public string DispatchID { get; set; }
 
         public DispatchTypes DispatchType { get; set; } = 0;
@@ -17,7 +17,10 @@ namespace Domain.Dtos
         public string? ProductDescription { get; set; }
         
         [Display(Name = "تن")]
-        public string tnDispatch { get; set; }
+        public string tnDispatch { get; set; }  
+
+        [Display(Name = "تعداد")]
+        public string Count { get; set; }
 
 
 
