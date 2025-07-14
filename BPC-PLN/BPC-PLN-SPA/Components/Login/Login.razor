@@ -1,0 +1,144 @@
+﻿@page "/login"
+@attribute [AllowAnonymous]
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using System.Security.Claims
+@using Data.Context
+@using Microsoft.AspNetCore.Authorization
+@inject IServiceProvider ServiceProvider
+@inject NavigationManager Navigation
+@inject IHttpContextAccessor HttpContextAccessor
+
+<PageTitle>ورود</PageTitle>
+
+<h3 class="text-center mb-4">ورود</h3>
+<hr />
+
+<div class="mb-3">
+    <label>نام کاربری:</label>
+    <input class="form-control" @bind="Model.Username" />
+</div>
+
+<div class="mb-3">
+    <label>رمز عبور:</label>
+    <input class="form-control" type="password" @bind="Model.Password" />
+</div>
+
+<div class="mb-3">
+    <label>نوع ورود:</label><br />
+
+    <input type="radio" class="btn-check" name="accessType" id="typeA" autocomplete="off"
+           @onchange="() => Model.AccessType = DbAccessType.Branch"
+           checked="@(Model.AccessType == DbAccessType.Branch)" />
+    <label class="btn btn-outline-primary me-2" for="typeA">ورود شعب</label>
+
+    <input type="radio" class="btn-check" name="accessType" id="typeB" autocomplete="off"
+           @onchange="() => Model.AccessType = DbAccessType.Provider"
+           checked="@(Model.AccessType == DbAccessType.Provider)" />
+    <label class="btn btn-outline-primary me-2" for="typeB">ورود تامین‌کننده</label>
+
+    <input type="radio" class="btn-check" name="accessType" id="typeC" autocomplete="off"
+           @onchange="() => Model.AccessType = DbAccessType.Main"
+           checked="@(Model.AccessType == DbAccessType.Main)" />
+    <label class="btn btn-outline-primary me-2" for="typeC">برنامه‌ریزی</label>
+</div>
+
+<button class="btn btn-success" @onclick="HandleLogin">ورود</button>
+
+@if (!string.IsNullOrWhiteSpace(ErrorMessage))
+{
+    <div class="alert alert-danger mt-3">@ErrorMessage</div>
+}
+
+@code {
+    private LoginModel Model = new();
+    private string ErrorMessage;
+
+    private async Task HandleLogin()
+    {
+        try
+        {
+            bool success = false;
+            string role = "";
+            string fullName = "";
+
+            if (Model.AccessType == DbAccessType.Branch)
+            {
+                using var db = ServiceProvider.GetRequiredService<BpcwebserverDbContext>();
+                var user = db.BranchUsers.FirstOrDefault(u =>
+                    u.Username.Trim() == Model.Username.Trim() &&
+                    u.Password.Trim() == Model.Password.Trim());
+
+                if (user is not null)
+                {
+                    success = true;
+                    role = "Branch";
+                    fullName = user.Username;
+                }
+            }
+            else if (Model.AccessType == DbAccessType.Provider)
+            {
+                using var db = ServiceProvider.GetRequiredService<BpcwebserverDbContext>();
+                var user = db.ProviderUsers.FirstOrDefault(u =>
+                    u.Username.Trim() == Model.Username.Trim() &&
+                    u.Password.Trim() == Model.Password.Trim());
+
+                if (user is not null)
+                {
+                    success = true;
+                    role = "Provider";
+                    fullName = user.Username;
+                }
+            }
+            else if (Model.AccessType == DbAccessType.Main)
+            {
+                role = "Admin";
+                success = true;
+                fullName = "AdminUser";
+            }
+
+            if (success)
+            {
+                var claims = new List<Claim>
+                {
+                    new(ClaimTypes.Name, Model.Username),
+                    new(ClaimTypes.Role, role),
+                    new("AccessType", Model.AccessType.ToString())
+                };
+
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(identity);
+
+                await HttpContextAccessor.HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+                Navigation.NavigateTo("/");
+            }
+            else
+            {
+                ErrorMessage = "نام کاربری یا رمز اشتباه است.";
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"خطا در ورود: {ex.Message}";
+        }
+    }
+
+    public class LoginModel
+    {
+        [Required]
+        public string Username { get; set; }
+        [Required]
+        public string Password { get; set; }
+        public DbAccessType AccessType { get; set; } = DbAccessType.Main;
+    }
+
+    public enum DbAccessType
+    {
+        Main,
+        Provider,
+        Branch
+    }
+}

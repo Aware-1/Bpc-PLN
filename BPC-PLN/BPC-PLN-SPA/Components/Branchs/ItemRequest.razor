@@ -1,0 +1,191 @@
+﻿@page "/ItemRequest"
+@using System.Globalization
+@using Microsoft.EntityFrameworkCore
+@using Data.Context
+
+@inject BpcwebserverDbContext bpcwebserverDbContext
+@inject UnityDbContext UnityDbContext
+@inject IHttpContextAccessor HttpContextAccessor
+
+<PageTitle>درخواست کالا</PageTitle>
+
+<h5 class="text-end">تاریخ: @HeaderModel.Date.ToString("yyyy/MM/dd", CultureInfo.InvariantCulture)</h5>
+
+<!-- فرم ورود کالا -->
+<div class="border p-3 mb-3">
+    <div class="row align-items-end">
+        <div class="col-2">
+            <label>کد کالا:</label>
+            <input class="form-control"
+                   type="number"
+                   @bind-value="ProductCodeInput"
+                   @bind-value:event="onchange" />
+        </div>
+        <div class="col-2">
+            <label>تعداد واحد کل:</label>
+            <input class="form-control" type="number" @bind="QuantityInput" />
+        </div>
+        <div class="col-2">
+            <button class="btn btn-dark mt-3" @onclick="AddItem">ثبت</button>
+        </div>
+        <div class="col-4 mt-2">
+            <label class="text-danger">@ProductNamePreview</label>
+        </div>
+    </div>
+</div>
+
+<table class="table table-bordered text-center">
+    <thead class="table-secondary">
+        <tr>
+            <th>حذف</th>
+            <th>کد کالا</th>
+            <th>شرح کالا</th>
+            <th>واحد</th>
+            <th>تعداد</th>
+            <th>وزن ناخالص</th>
+            <th>وزن خالص</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Items)
+        {
+            <tr>
+                <td>
+                    <button class="btn btn-sm btn-danger" @onclick="() => DeleteItem(item)">حذف</button>
+                </td>
+                <td>@item.ProductCode</td>
+                <td>@item.ProductName</td>
+                <td>@item.Unit</td>
+                <td>@item.Quantity</td>
+                <td>@item.GrossWeight</td>
+                <td>@item.NetWeight</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private ItemHeaderModel HeaderModel = new() { Date = DateTime.Now };
+    private List<ItemRowViewModel> Items = new();
+
+    private int _productCodeInput;
+    private int ProductCodeInput
+    {
+        get => _productCodeInput;
+        set
+        {
+            if (_productCodeInput != value)
+            {
+                _productCodeInput = value;
+                _ = CheckProductAsync();
+            }
+        }
+    }
+
+    private int QuantityInput;
+    private string ProductNamePreview = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var userCode = HttpContextAccessor.HttpContext?.Request.Cookies["UserCode"];
+
+        HeaderModel = new ItemHeaderModel
+            {
+                Date = DateTime.Now,
+                Address = "آدرس نمونه",
+                RequestCode = "کد پرسنلی",
+                Definition = "کد حساب",
+                DeliveryPlace = "شرح مرکز"
+            };
+
+        // می‌توان پر کردن اطلاعات واقعی را فعال کرد
+        // if (!string.IsNullOrWhiteSpace(userCode))
+        // {
+        //     var userInfo = await UnityDbContext.BranchUsers
+        //         .Where(u => u.LogicalRef == userCode)
+        //         .Select(u => new ItemHeaderModel
+        //         {
+        //             Date = DateTime.Now,
+        //             RequestCode = u.PersonalCode,
+        //             Address = u.Address,
+        //             DeliveryPlace = u.Description,
+        //             Definition = u.AccountTitle
+        //         })
+        //         .FirstOrDefaultAsync();
+
+        //     if (userInfo != null)
+        //         HeaderModel = userInfo;
+        // }
+    }
+
+    private async Task CheckProductAsync()
+    {
+        ProductNamePreview = "";
+
+        if (ProductCodeInput <= 0)
+            return;
+
+        var product = await bpcwebserverDbContext.Products
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.ItemRef == ProductCodeInput);
+
+        ProductNamePreview = product != null
+            ? $"نام کالا: {product.ItemName}"
+            : "همچین محصولی پیدا نشد";
+
+        StateHasChanged();
+    }
+
+    private async Task AddItem()
+    {
+        if (ProductCodeInput <= 0 || QuantityInput <= 0)
+            return;
+
+        var product = await bpcwebserverDbContext.Products
+            .FirstOrDefaultAsync(p => p.ItemRef == ProductCodeInput);
+
+        if (product == null)
+        {
+            ProductNamePreview = "همچین محصولی پیدا نشد";
+            return;
+        }
+
+        Items.Add(new ItemRowViewModel
+            {
+                ProductCode = product.ItemRef,
+                ProductName = product.ItemName,
+                Unit = product.UnitSetCode,
+                Quantity = QuantityInput,
+                GrossWeight = QuantityInput * product.GrossWeight,
+                NetWeight = QuantityInput * product.Width
+            });
+
+        ProductCodeInput = 0;
+        QuantityInput = 0;
+        ProductNamePreview = "";
+    }
+
+    private void DeleteItem(ItemRowViewModel item)
+    {
+        Items.Remove(item);
+    }
+
+    public class ItemHeaderModel
+    {
+        public DateTime Date { get; set; }
+        public string RequestCode { get; set; }
+        public string Address { get; set; }
+        public string Definition { get; set; }
+        public string DeliveryPlace { get; set; }
+    }
+
+    public class ItemRowViewModel
+    {
+        public int ProductCode { get; set; }
+        public string ProductName { get; set; }
+        public string Unit { get; set; }
+        public int Quantity { get; set; }
+        public decimal GrossWeight { get; set; }
+        public decimal NetWeight { get; set; }
+    }
+}

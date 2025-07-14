@@ -1,7 +1,9 @@
-using BPC_PLN_SPA.Components;
 using BPC_PLN_SPA.Components.Layout;
+using Data.Context;
 using Data.Reposirory;
 using Domain.IRipository;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
 
 namespace BPC_PLN_SPA
 {
@@ -14,13 +16,33 @@ namespace BPC_PLN_SPA
             // Add services to the container.
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
+            
             #region IOC
+
             builder.Services.AddSingleton<IReposiroryCharge, ReposiroryCharge>();
             builder.Services.AddSingleton<IDispatchRipository, DispatchRipository>();
 
 
+            builder.Services.AddDbContext<BpcwebserverDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("ApplicationServices")));
 
+            builder.Services.AddDbContext<UnityDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("UnityConnectionString")));
+
+            
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.LoginPath = "/login"; 
+                });
+            //builder.Services.AddHttpContextAccessor();
+            builder.Services.AddCascadingAuthenticationState();
             #endregion
+
+            builder.Services.AddAuthorization();
+
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -31,6 +53,9 @@ namespace BPC_PLN_SPA
                 app.UseHsts();
             }
 
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseHttpsRedirection();
 
             app.UseAntiforgery();
@@ -38,6 +63,7 @@ namespace BPC_PLN_SPA
             app.MapStaticAssets();
             app.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode();
+
 
             app.Run();
         }

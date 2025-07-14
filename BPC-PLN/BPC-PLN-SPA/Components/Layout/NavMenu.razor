@@ -17,7 +17,33 @@
             <NavLink class="nav-link" href="ImportDispatch" Match="NavLinkMatch.All">
                 اکسل حواله
             </NavLink>
+        </div> 
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="PackageCreation" Match="NavLinkMatch.All">
+                ساخت بسته
+            </NavLink>
         </div>
+        <!-- #region name -->
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link"  @onclick="ToggleReportMenu" style="cursor: pointer; white-space: nowrap;">
+                گزارشات @(isExpandedReport ? "^" : ">")
+            </NavLink>
+        </div>
+
+        @if (isExpandedReport)
+        {
+            <div class="sub-menu">
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="7">| گزارشات حواله</NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link " href="8">| گزارشات بسته</NavLink>
+                </div>
+            </div>
+        }
+
+        <!-- #endregion -->
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="1" Match="NavLinkMatch.All">
                 اطلاعات شعب
@@ -44,29 +70,99 @@
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="#" @onclick="ToggleMenu" style="cursor: pointer;">
-                مدیریت کاربران
+            <NavLink class="nav-link" @onclick="TogglePermissionMenu" style="cursor: pointer; white-space: nowrap;">
+                مدیریت کاربران @(isExpandedPermission ? "^" : ">")
             </NavLink>
         </div>
 
-        @if (isExpanded)
+        @if (isExpandedPermission)
         {
             <div class="sub-menu">
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="log">لاگ</NavLink>
+                    <NavLink class="nav-link" href="log">| لاگ</NavLink>
                 </div>
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link " href="permission">دسترسی کاربران</NavLink>
+                    <NavLink class="nav-link " href="permission">| دسترسی کاربران</NavLink>
                 </div>
             </div>
         }
+
+
+
+
+
+<!-- #region branchs -->
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="ItemRequest" Match="NavLinkMatch.All">
+                درخواست کالا
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="RegisteredReport" Match="NavLinkMatch.All">
+                گزارش سفارشات اعمال شده
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="UnregisteredReport" Match="NavLinkMatch.All">
+              سفارشات اعمال  نشده
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="LastYearsOrderReport" Match="NavLinkMatch.All">
+                گزارش سفارشات سال مالی گذشته
+            </NavLink>
+        </div>
+
+
+        <!-- #endregion -->
+
+
+
+
+
+
+
+<!--region branchs -->
+
+
+
+<!-- #endregion -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     </nav>
 </div>
 @code {
-    private bool isExpanded = false;
+    private bool isExpandedPermission = false;
 
-    private void ToggleMenu()
+    private void TogglePermissionMenu()
     {
-        isExpanded = !isExpanded;
+        isExpandedPermission = !isExpandedPermission;
+    }
+
+    private bool isExpandedReport = false;
+
+    private void ToggleReportMenu()
+    {
+        isExpandedReport = !isExpandedReport;
     }
 }

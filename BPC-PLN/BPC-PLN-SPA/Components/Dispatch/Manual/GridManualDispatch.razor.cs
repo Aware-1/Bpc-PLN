@@ -95,11 +95,23 @@ namespace BPC_PLN_SPA.Components.Dispatch
             if (!string.IsNullOrEmpty(dispatch.ProductCode))
             {
                 dispatch.ProductDescription = await _dispatchRipository.GetBranchNameByCodeAsync(dispatch.ProductCode); //Todo
-                AddNewRow();
             }
             else
             {
                 dispatch.ProductDescription = string.Empty;
+            }
+            StateHasChanged();
+        }  
+        protected async Task CalcTn(GridManualDispatchVM dispatch)
+        {
+            if (!string.IsNullOrEmpty(dispatch.Count))
+            {
+                dispatch.tnDispatch = await _dispatchRipository.CalcTnForDispatch(dispatch.Count); //Todo
+                AddNewRow();
+            }
+            else
+            {
+                dispatch.tnDispatch = string.Empty;
             }
             StateHasChanged();
         }

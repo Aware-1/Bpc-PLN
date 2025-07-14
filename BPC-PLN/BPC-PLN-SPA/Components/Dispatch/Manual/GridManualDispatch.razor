@@ -31,7 +31,7 @@
                                 </td>
                                 <td>@dispatch.BranchName</td>
                                 <td>
-                                    <input @bind="dispatch.Count"type="text" class="form-control" />
+                                    <input @bind="dispatch.Count" @bind:event="oninput" @onchange="() => CalcTn(dispatch)" type="text" class="form-control" />
                                 </td>
                                 <td>@dispatch.tnDispatch</td>
                             </tr>
