@@ -1,10 +1,11 @@
 ﻿@page "/login"
 @attribute [AllowAnonymous]
-@using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Authentication.Cookies
 @using System.Security.Claims
 @using Data.Context
+@using Domain.Dtos
+@using Domain.Entities
 @using Microsoft.AspNetCore.Authorization
 @inject IServiceProvider ServiceProvider
 @inject NavigationManager Navigation
@@ -17,30 +18,30 @@
 
 <div class="mb-3">
     <label>نام کاربری:</label>
-    <input class="form-control" @bind="Model.Username" />
+    <input class="form-control" @bind="ViewModel.Username" />
 </div>
 
 <div class="mb-3">
     <label>رمز عبور:</label>
-    <input class="form-control" type="password" @bind="Model.Password" />
+    <input class="form-control" type="password" @bind="ViewModel.Password" />
 </div>
 
 <div class="mb-3">
     <label>نوع ورود:</label><br />
 
     <input type="radio" class="btn-check" name="accessType" id="typeA" autocomplete="off"
-           @onchange="() => Model.AccessType = DbAccessType.Branch"
-           checked="@(Model.AccessType == DbAccessType.Branch)" />
+           @onchange="() => ViewModel.AccessType = DbAccessType.Branch"
+           checked="@(ViewModel.AccessType == DbAccessType.Branch)" />
     <label class="btn btn-outline-primary me-2" for="typeA">ورود شعب</label>
 
     <input type="radio" class="btn-check" name="accessType" id="typeB" autocomplete="off"
-           @onchange="() => Model.AccessType = DbAccessType.Provider"
-           checked="@(Model.AccessType == DbAccessType.Provider)" />
+           @onchange="() => ViewModel.AccessType = DbAccessType.Provider"
+           checked="@(ViewModel.AccessType == DbAccessType.Provider)" />
     <label class="btn btn-outline-primary me-2" for="typeB">ورود تامین‌کننده</label>
 
     <input type="radio" class="btn-check" name="accessType" id="typeC" autocomplete="off"
-           @onchange="() => Model.AccessType = DbAccessType.Main"
-           checked="@(Model.AccessType == DbAccessType.Main)" />
+           @onchange="() => ViewModel.AccessType = DbAccessType.Main"
+           checked="@(ViewModel.AccessType == DbAccessType.Main)" />
     <label class="btn btn-outline-primary me-2" for="typeC">برنامه‌ریزی</label>
 </div>
 
@@ -52,7 +53,8 @@
 }
 
 @code {
-    private LoginModel Model = new();
+    private LoginBranchDto ViewModel = new();
+    private BranchUser Model = new();
     private string ErrorMessage;
 
     private async Task HandleLogin()
@@ -63,26 +65,27 @@
             string role = "";
             string fullName = "";
 
-            if (Model.AccessType == DbAccessType.Branch)
+            if (ViewModel.AccessType == DbAccessType.Branch)
             {
-                using var db = ServiceProvider.GetRequiredService<BpcwebserverDbContext>();
-                var user = db.BranchUsers.FirstOrDefault(u =>
-                    u.Username.Trim() == Model.Username.Trim() &&
-                    u.Password.Trim() == Model.Password.Trim());
+                using var db = ServiceProvider.GetRequiredService<UnityDbContext>();
+                Model = db.BranchUsers.FirstOrDefault(u =>
+                   u.Name.Trim() == ViewModel.Username.Trim() &&
+                   u.Password.Trim() == ViewModel.Password.Trim());
 
-                if (user is not null)
+
+                if (Model is not null)
                 {
                     success = true;
                     role = "Branch";
-                    fullName = user.Username;
+                    fullName = Model.UserName;
                 }
             }
-            else if (Model.AccessType == DbAccessType.Provider)
+            else if (ViewModel.AccessType == DbAccessType.Provider)
             {
                 using var db = ServiceProvider.GetRequiredService<BpcwebserverDbContext>();
                 var user = db.ProviderUsers.FirstOrDefault(u =>
-                    u.Username.Trim() == Model.Username.Trim() &&
-                    u.Password.Trim() == Model.Password.Trim());
+                    u.Username.Trim() == ViewModel.Username.Trim() &&
+                    u.Password.Trim() == ViewModel.Password.Trim());
 
                 if (user is not null)
                 {
@@ -91,8 +94,8 @@
                     fullName = user.Username;
                 }
             }
-            else if (Model.AccessType == DbAccessType.Main)
-            {
+            else if (ViewModel.AccessType == DbAccessType.Main)
+            {//todo switch case role
                 role = "Admin";
                 success = true;
                 fullName = "AdminUser";
@@ -102,9 +105,8 @@
             {
                 var claims = new List<Claim>
                 {
-                    new(ClaimTypes.Name, Model.Username),
-                    new(ClaimTypes.Role, role),
-                    new("AccessType", Model.AccessType.ToString())
+                    new(ClaimTypes.Name, Model.UserName),
+                    // new(ClaimTypes., role),
                 };
 
                 var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -126,19 +128,5 @@
         }
     }
 
-    public class LoginModel
-    {
-        [Required]
-        public string Username { get; set; }
-        [Required]
-        public string Password { get; set; }
-        public DbAccessType AccessType { get; set; } = DbAccessType.Main;
-    }
 
-    public enum DbAccessType
-    {
-        Main,
-        Provider,
-        Branch
-    }
 }

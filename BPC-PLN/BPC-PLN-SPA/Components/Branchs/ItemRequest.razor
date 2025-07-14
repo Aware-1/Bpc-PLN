@@ -3,6 +3,7 @@
 @using Microsoft.EntityFrameworkCore
 @using Data.Context
 @using Domain.Dtos
+@using Domain.Entities
 
 @inject BpcwebserverDbContext bpcwebserverDbContext
 @inject UnityDbContext UnityDbContext
@@ -66,8 +67,8 @@
 </table>
 
 @code {
-    private ItemHeaderModel HeaderModel = new() { Date = DateTime.Now };
     private List<ItemRowViewModel> Items = new();
+    private BranchUser Model = new();
 
     private int _productCodeInput;
     private int ProductCodeInput
@@ -89,34 +90,24 @@
     protected override async Task OnInitializedAsync()
     {
         var userCode = HttpContextAccessor.HttpContext?.Request.Cookies["UserCode"];
-        var branchCode = /*            --------------------*/"";
-        HeaderModel = new ItemHeaderModel
-            {
-                Date = DateTime.Now,
-                Address = "آدرس نمونه",
-                RequestCode = "کد پرسنلی",
-                Definition = "کد حساب",
-                DeliveryPlace = "شرح مرکز"
-            };
-
+      
         if (!string.IsNullOrWhiteSpace(userCode))
         {
             var now = DateTime.Now;
-
+            //ممکنه 2 تا بیاره
             var userInfo = await UnityDbContext.BranchUsers
-                .Where(u => u.CLIENTREF == userCode)
+                .Where(u => u.Name.Trim() == userCode.Trim())
                 .Select(u => new HeaderBranchDto
                 {
                     Date = now,
-                    RequestCode = branchCode + now.ToString("yyMMdd") + now.ToString("HHmmss"),
-                    Address = u.Address,
-                    DeliveryPlace = u.Description,
-                    Definition = u.AccountTitle
+                    RequestCode = Model.BranchCode+ now.ToString("yyMMdd") + now.ToString("HHmmss"),
+                    Address = u.Addr1,
+                    DeliveryPlace = u.Code,
+                    Definition = u.Definition
                 })
                 .FirstOrDefaultAsync();
 
-            if (userInfo != null)
-                HeaderModel = userInfo;
+            // if (userInfo != null)
         }
 
 

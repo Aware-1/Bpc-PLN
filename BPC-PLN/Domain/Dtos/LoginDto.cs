@@ -2,19 +2,27 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Dtos
-{
-    [Table("BPC_006_BranchUsers")]
+{//branch
     public class LoginBranchDto
     {
-        [Key]
+        
         public int LogicalRef { get; set; }
         [Required(ErrorMessage = "پرکردن این ورودی اجباری است")]
         public string Username { get; set; }
         [Required(ErrorMessage = "پرکردن این ورودی اجباری است")]
         public string Password { get; set; }
+        public DbAccessType AccessType { get; set; } = DbAccessType.Main;
+
+    }
+    public enum DbAccessType
+    {
+        Main,
+        Provider,
+        Branch
     }
 
 
+    //user
     [Table("tblUser")]
     public class LoginProviderDto
     {
