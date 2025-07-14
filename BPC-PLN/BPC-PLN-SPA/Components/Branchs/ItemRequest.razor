@@ -2,6 +2,7 @@
 @using System.Globalization
 @using Microsoft.EntityFrameworkCore
 @using Data.Context
+@using Domain.Dtos
 
 @inject BpcwebserverDbContext bpcwebserverDbContext
 @inject UnityDbContext UnityDbContext
@@ -88,7 +89,7 @@
     protected override async Task OnInitializedAsync()
     {
         var userCode = HttpContextAccessor.HttpContext?.Request.Cookies["UserCode"];
-
+        var branchCode = /*            --------------------*/"";
         HeaderModel = new ItemHeaderModel
             {
                 Date = DateTime.Now,
@@ -98,24 +99,27 @@
                 DeliveryPlace = "شرح مرکز"
             };
 
-        // می‌توان پر کردن اطلاعات واقعی را فعال کرد
-        // if (!string.IsNullOrWhiteSpace(userCode))
-        // {
-        //     var userInfo = await UnityDbContext.BranchUsers
-        //         .Where(u => u.LogicalRef == userCode)
-        //         .Select(u => new ItemHeaderModel
-        //         {
-        //             Date = DateTime.Now,
-        //             RequestCode = u.PersonalCode,
-        //             Address = u.Address,
-        //             DeliveryPlace = u.Description,
-        //             Definition = u.AccountTitle
-        //         })
-        //         .FirstOrDefaultAsync();
+        if (!string.IsNullOrWhiteSpace(userCode))
+        {
+            var now = DateTime.Now;
 
-        //     if (userInfo != null)
-        //         HeaderModel = userInfo;
-        // }
+            var userInfo = await UnityDbContext.BranchUsers
+                .Where(u => u.CLIENTREF == userCode)
+                .Select(u => new HeaderBranchDto
+                {
+                    Date = now,
+                    RequestCode = branchCode + now.ToString("yyMMdd") + now.ToString("HHmmss"),
+                    Address = u.Address,
+                    DeliveryPlace = u.Description,
+                    Definition = u.AccountTitle
+                })
+                .FirstOrDefaultAsync();
+
+            if (userInfo != null)
+                HeaderModel = userInfo;
+        }
+
+
     }
 
     private async Task CheckProductAsync()
