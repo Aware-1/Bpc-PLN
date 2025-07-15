@@ -2,9 +2,9 @@
 <CascadingAuthenticationState>
     <Router AppAssembly="typeof(Program).Assembly">
         <Found Context="routeData">
-            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="typeof(Layout.MainLayout)">
                 <NotAuthorized>
-                    <BPC_PLN_SPA.Components.Login.RedirectToLogin />
+                    <BPC_PLN_SPA.Components.Login.Logout />
                 </NotAuthorized>
                 <Authorizing>
                     <p>در حال بررسی احراز هویت...</p>
@@ -13,7 +13,7 @@
             <FocusOnNavigate RouteData="routeData" Selector="h1" />
         </Found>
         <NotFound>
-            <LayoutView Layout="@typeof(Layout.MainLayout)"> <p> Not Found </p> </LayoutView>
+            <LayoutView Layout="typeof(MainLayout)"> <p> یافت نشد </p> </LayoutView>
         </NotFound>
     </Router>
 </CascadingAuthenticationState>

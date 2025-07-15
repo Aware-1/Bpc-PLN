@@ -11,6 +11,7 @@ namespace Domain.Dtos
         public string Username { get; set; }
         [Required(ErrorMessage = "پرکردن این ورودی اجباری است")]
         public string Password { get; set; }
+        [Required(ErrorMessage = "پرکردن این ورودی اجباری است")]
         public DbAccessType AccessType { get; set; } = DbAccessType.Main;
 
     }

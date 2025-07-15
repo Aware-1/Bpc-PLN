@@ -1,6 +1,7 @@
 ﻿using Domain.Dtos;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+
 namespace Data.Context
 {
     public class UnityDbContext : DbContext
@@ -13,8 +14,8 @@ namespace Data.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<BranchUser>()
-                .HasNoKey() 
-                .ToView("vw_WarehouseUsers"); 
+                .HasNoKey()
+                .ToView("vw_WarehouseUsers");
 
             base.OnModelCreating(modelBuilder);
         }
