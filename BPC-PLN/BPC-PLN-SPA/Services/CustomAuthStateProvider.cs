@@ -1,7 +1,6 @@
-﻿using BPC_PLN_SPA.Services;
-using Data.Context;
+﻿using Data.Context;
 using Domain.Dtos;
-using Domain.Entities;
+using Domain.Entities.User;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -12,6 +11,9 @@ namespace BPC_PLN_SPA.Service;
 
 public class CustomAuthStateProvider : AuthenticationStateProvider
 {
+    public const string AuthCookieName = "access_token";
+
+
     private readonly UnityDbContext _unityDb;
     private readonly BpcwebserverDbContext _bpcwebserverDb;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -19,7 +21,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
     public CustomAuthStateProvider(UnityDbContext unityDb, BpcwebserverDbContext bpcwebserverDb, IHttpContextAccessor httpContextAccessor)
     {
         _unityDb = unityDb;
-        _bpcwebserverDb= bpcwebserverDb;
+        _bpcwebserverDb = bpcwebserverDb;
         _httpContextAccessor = httpContextAccessor;
     }
 
@@ -27,16 +29,14 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
     {
         try
         {
-            if (_httpContextAccessor.HttpContext!.Request.Cookies.ContainsKey(BlazorConstants.AuthCookieName))
+            if (_httpContextAccessor.HttpContext!.Request.Cookies.ContainsKey(AuthCookieName))
             {
-                var token = _httpContextAccessor.HttpContext.Request.Cookies[BlazorConstants.AuthCookieName];
+                var token = _httpContextAccessor.HttpContext.Request.Cookies[AuthCookieName];
                 var handler = new JwtSecurityTokenHandler();
                 var jsonToken = handler.ReadToken(token) as JwtSecurityToken;
                 var claims = new List<Claim>();
                 foreach (var claim in jsonToken!.Claims)
-                {
-                    claims.Add(new Claim(claim.Type, claim.Value));
-                }
+                { claims.Add(new Claim(claim.Type, claim.Value)); }
 
                 var claimsIdentity = new ClaimsIdentity(claims, "jwt");
                 var user = new ClaimsPrincipal(claimsIdentity);
@@ -50,7 +50,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
         }
     }
 
-    public string Login(LoginBranchDto model)
+    public string Login(LoginDto model)
     {
         bool success = false;
         string role = "";
@@ -73,7 +73,6 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
                         success = true;
                         role = "Branch";
                     }
-
                     break;
                 case DbAccessType.Provider:
                     var user = _bpcwebserverDb.ProviderUsers.FirstOrDefault(u =>
@@ -85,7 +84,6 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
                         success = true;
                         role = "Provider";
                     }
-
                     break;
                 case DbAccessType.Main:
                     //todo switch case role

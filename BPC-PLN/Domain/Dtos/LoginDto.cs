@@ -2,16 +2,15 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Dtos
-{//branch
-    public class LoginBranchDto
+{
+    public class LoginDto
     {
         
-        public int LogicalRef { get; set; }
-        [Required(ErrorMessage = "پرکردن این ورودی اجباری است")]
+        [Required(ErrorMessage = "وارد کردن نام کاربری اجباری است")]
         public string Username { get; set; }
-        [Required(ErrorMessage = "پرکردن این ورودی اجباری است")]
+        [Required(ErrorMessage = " وارد کردن رمز اجباری است")]
         public string Password { get; set; }
-        [Required(ErrorMessage = "پرکردن این ورودی اجباری است")]
+        [Required(ErrorMessage = "انتخاب نوع ورود اجباری است")]
         public DbAccessType AccessType { get; set; } = DbAccessType.Main;
 
     }
@@ -22,16 +21,5 @@ namespace Domain.Dtos
         Branch
     }
 
-
-    //user
-    [Table("tblUser")]
-    public class LoginProviderDto
-    {
-        [Key]
-        public int UserId { get; set; }
-        [Required(ErrorMessage = "پرکردن این ورودی اجباری است")]
-        public string Username { get; set; }
-        [Required(ErrorMessage = "پرکردن این ورودی اجباری است")]
-        public string Password { get; set; }
-    }
+  
 }

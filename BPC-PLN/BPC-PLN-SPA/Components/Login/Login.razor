@@ -1,7 +1,5 @@
 ﻿@page "/login"
-@using System.ComponentModel.DataAnnotations
 @using BPC_PLN_SPA.Service
-@using BPC_PLN_SPA.Services
 @using Domain.Dtos
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
@@ -68,16 +66,17 @@
         </div>
     </div>
 </div>
+<script src="extensions.js"></script>
 
 @code {
 
     [SupplyParameterFromForm]
-    private LoginBranchDto ViewModel { get; set; } = new();
+    private LoginDto ViewModel { get; set; } = new();
 
     private string? ErrorMessage;
     private bool isLoading = false;
 
-    private void HandleLogin()
+    private async void HandleLogin()
     {
         isLoading = true;
         try
@@ -85,17 +84,23 @@
             var customAuthenticationStateProvider = (CustomAuthStateProvider)AuthenticationStateProvider;
             var token = customAuthenticationStateProvider.Login(ViewModel);
 
-            // HttpContextAccessor.HttpContext!.Response.Cookies.Append(BlazorConstants.AuthCookieName, token, new CookieOptions
+
+
+            // HttpContextAccessor.HttpContext!.Response.Cookies.Append(AuthCookieName, token, new CookieOptions
             //     {
             //         HttpOnly = true,
             //         Expires = DateTimeOffset.Now.AddMinutes(30),
             //     });
+            //NavigationManager.NavigateTo("/postlogin?Token=" + token, true);
 
+
+
+
+            await JSRuntime.InvokeVoidAsync("blazorExtensions.SetCookie", "access_token", token);
 
             // سیو کوکی توکن با جاوا اسکریپت در بلیزور به نام access_token
             NavigationManager.NavigateTo("/", true);
 
-            //NavigationManager.NavigateTo("/postlogin?Token=" + token, true);
         }
         catch (Exception ex)
         {

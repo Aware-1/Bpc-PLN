@@ -1,4 +1,4 @@
-﻿@using BPC_PLN_SPA.Services
+﻿@using BPC_PLN_SPA.Service
 @inject IHttpContextAccessor HttpContextAccessor
 @inject NavigationManager NavigationManager
 
@@ -6,7 +6,7 @@
 
     protected override void OnInitialized()
     {
-        HttpContextAccessor.HttpContext!.Response.Cookies.Delete(BlazorConstants.AuthCookieName);
+        HttpContextAccessor.HttpContext!.Response.Cookies.Delete(CustomAuthStateProvider.AuthCookieName);
         NavigationManager.NavigateTo("/login");
     }
 }

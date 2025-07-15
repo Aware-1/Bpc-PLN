@@ -9,11 +9,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\extensions.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Components\Charge\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\extensions.js" />
   </ItemGroup>
 
   <ItemGroup>

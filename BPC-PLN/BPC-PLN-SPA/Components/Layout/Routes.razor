@@ -2,24 +2,23 @@
 <CascadingAuthenticationState>
     <Router AppAssembly="typeof(Program).Assembly">
         <Found Context="routeData">
-            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="typeof(Layout.MainLayout)" >
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="typeof(MainLayout)">
                 <NotAuthorized>
-                    @* <BPC_PLN_SPA.Components.Login.Logout /> *@
 
-                                    @if (context.User.Identity.IsAuthenticated == false)
-                {
-                    <p>sdfsdfsdf</p>
-                }
-                else
-                {
-                    <p>You are not authorized to access this resource.</p>
-                }
+                    @if (context.User.Identity.IsAuthenticated == false)
+                    {
+                        <p>sdfsdfsdf</p>
+                    }
+                    else
+                    {
+                        <p>You are not authorized to access this resource.</p>
+                    }
                 </NotAuthorized>
                 <Authorizing>
                     <p>در حال بررسی احراز هویت...</p>
                 </Authorizing>
             </AuthorizeRouteView>
-            
+
         </Found>
         <NotFound>
             <LayoutView Layout="typeof(MainLayout)"> <p> یافت نشد </p> </LayoutView>

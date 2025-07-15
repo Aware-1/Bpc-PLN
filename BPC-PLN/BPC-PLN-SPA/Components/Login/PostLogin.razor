@@ -1,5 +1,5 @@
 ﻿@page "/postlogin"
-@using BPC_PLN_SPA.Services
+@using BPC_PLN_SPA.Service
 @using Microsoft.AspNetCore.Authorization
 @inject IHttpContextAccessor HttpContextAccessor
 @inject NavigationManager NavigationManager
@@ -18,7 +18,7 @@
         }
         else
         {
-            HttpContextAccessor.HttpContext!.Response.Cookies.Append(BlazorConstants.AuthCookieName, Token, new CookieOptions
+            HttpContextAccessor.HttpContext!.Response.Cookies.Append(CustomAuthStateProvider.AuthCookieName, Token, new CookieOptions
             {
                 HttpOnly = true,
                 Expires = DateTimeOffset.Now.AddMinutes(30),
