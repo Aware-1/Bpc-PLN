@@ -5,6 +5,7 @@
 @using Domain.Entities
 @using Domain.Entities.User
 @using Microsoft.EntityFrameworkCore
+@using System.Security.Claims
 
 @inject BpcwebserverDbContext bpcwebserverDbContext
 @inject UnityDbContext UnityDbContext
@@ -20,9 +21,9 @@
         <div class="col-2">
             <label>کد کالا:</label>
             <input class="form-control"
-                   type="number"
-                   @bind-value="ProductCodeInput"
-                   @bind-value:event="onchange" />
+            type="number"
+            @bind-value="ProductCodeInput"
+            @bind-value:event="onchange" />
         </div>
         <div class="col-2">
             <label>تعداد واحد کل:</label>
@@ -89,9 +90,11 @@
     private string ProductNamePreview = "";
 
     protected override async Task OnInitializedAsync()
-    {
-        var userCode = HttpContextAccessor.HttpContext?.Request.Cookies["UserCode"];
-      
+    {           //todo
+        var userCode = HttpContextAccessor.HttpContext?.User.Claims.Where(u => u.Type == ClaimTypes.Name).FirstOrDefault()?.Value;
+
+        string? acctoken = HttpContextAccessor.HttpContext?.Request.Cookies["access_token"];
+
         if (!string.IsNullOrWhiteSpace(userCode))
         {
             var now = DateTime.Now;
@@ -107,6 +110,9 @@
                     Definition = u.Definition_
                 })
                 .FirstOrDefaultAsync();
+
+
+
 
             // if (userInfo != null)
         }

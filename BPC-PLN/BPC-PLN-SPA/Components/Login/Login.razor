@@ -95,8 +95,9 @@
 
 
 
+            await JSRuntime.InvokeVoidAsync("eval", $"document.cookie = 'access_token={token}; path=/; expires=' + new Date(Date.now() + 86400000).toUTCString();");
 
-            await JSRuntime.InvokeVoidAsync("blazorExtensions.SetCookie", "access_token", token);
+            //await JSRuntime.InvokeVoidAsync($"document.cookie + ';access_token={token}'");
 
             // سیو کوکی توکن با جاوا اسکریپت در بلیزور به نام access_token
             NavigationManager.NavigateTo("/", true);
