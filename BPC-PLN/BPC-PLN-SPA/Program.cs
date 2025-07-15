@@ -22,7 +22,7 @@ namespace BPC_PLN_SPA
 
             #region IOC
             builder.Services.AddCascadingAuthenticationState();
-            //builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+            builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
             builder.Services.AddSingleton<IReposiroryCharge, ReposiroryCharge>();
             builder.Services.AddSingleton<IDispatchRipository, DispatchRipository>();
             builder.Services.AddHttpContextAccessor();

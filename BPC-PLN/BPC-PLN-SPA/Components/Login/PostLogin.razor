@@ -1,7 +1,10 @@
 ﻿@page "/postlogin"
 @using BPC_PLN_SPA.Services
+@using Microsoft.AspNetCore.Authorization
 @inject IHttpContextAccessor HttpContextAccessor
 @inject NavigationManager NavigationManager
+@attribute [AllowAnonymous]
+
 
 @code {
     [SupplyParameterFromQuery]

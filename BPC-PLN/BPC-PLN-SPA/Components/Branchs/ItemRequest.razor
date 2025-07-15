@@ -103,7 +103,7 @@
                     RequestCode = Model.BranchCode+ now.ToString("yyMMdd") + now.ToString("HHmmss"),
                     Address = u.Addr1,
                     DeliveryPlace = u.Code,
-                    Definition = u.Definition
+                    Definition = u.Definition_
                 })
                 .FirstOrDefaultAsync();
 

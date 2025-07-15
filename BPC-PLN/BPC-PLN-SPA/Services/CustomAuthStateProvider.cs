@@ -64,7 +64,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
                 case DbAccessType.Branch:
 
                     branchUser = _unityDb.BranchUsers.FirstOrDefault(u =>
-                         u.Name.Trim() == model.Username.Trim() &&
+                         u.UserName.Trim() == model.Username.Trim() &&
                          u.Password.Trim() == model.Password.Trim());
 
 

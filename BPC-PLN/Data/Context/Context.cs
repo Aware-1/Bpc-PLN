@@ -15,7 +15,7 @@ namespace Data.Context
         {
             modelBuilder.Entity<BranchUser>()
                 .HasNoKey()
-                .ToView("vw_WarehouseUsers");
+                .ToView("BPCView_006_PortalUserInfo");
 
             base.OnModelCreating(modelBuilder);
         }

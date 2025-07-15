@@ -1,12 +1,16 @@
 ﻿@page "/login"
 @using System.ComponentModel.DataAnnotations
 @using BPC_PLN_SPA.Service
+@using BPC_PLN_SPA.Services
 @using Domain.Dtos
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
 @rendermode InteractiveServer
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJSRuntime JSRuntime
 @inject IHttpContextAccessor HttpContextAccessor
 @inject NavigationManager NavigationManager
+@attribute [AllowAnonymous]
 
 <div class="d-flex justify-content-center align-items-center vh-100">
     <div class="card shadow-sm p-4" style="width: 100%; max-width: 400px;">
@@ -81,7 +85,17 @@
             var customAuthenticationStateProvider = (CustomAuthStateProvider)AuthenticationStateProvider;
             var token = customAuthenticationStateProvider.Login(ViewModel);
 
-            NavigationManager.NavigateTo("/postlogin?Token=" + token);
+            // HttpContextAccessor.HttpContext!.Response.Cookies.Append(BlazorConstants.AuthCookieName, token, new CookieOptions
+            //     {
+            //         HttpOnly = true,
+            //         Expires = DateTimeOffset.Now.AddMinutes(30),
+            //     });
+
+
+            // سیو کوکی توکن با جاوا اسکریپت در بلیزور به نام access_token
+            NavigationManager.NavigateTo("/", true);
+
+            //NavigationManager.NavigateTo("/postlogin?Token=" + token, true);
         }
         catch (Exception ex)
         {
