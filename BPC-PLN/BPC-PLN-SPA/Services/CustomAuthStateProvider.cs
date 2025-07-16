@@ -34,9 +34,18 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
                 var token = _httpContextAccessor.HttpContext.Request.Cookies[AuthCookieName];
                 var handler = new JwtSecurityTokenHandler();
                 var jsonToken = handler.ReadToken(token) as JwtSecurityToken;
+                string? expDate = jsonToken?.Claims?.Where(x => x.Type == "exp").FirstOrDefault()?.Value;
+                if(DateTimeOffset.FromUnixTimeSeconds(int.Parse(expDate)).Date < DateTime.Now)
+                {
+                    return Task.FromResult(new AuthenticationState(new ClaimsPrincipal()));
+                }
+
+
                 var claims = new List<Claim>();
                 foreach (var claim in jsonToken!.Claims)
-                { claims.Add(new Claim(claim.Type, claim.Value)); }
+                {
+                    claims.Add(new Claim(claim.Type, claim.Value));
+                }
 
                 var claimsIdentity = new ClaimsIdentity(claims, "jwt");
                 var user = new ClaimsPrincipal(claimsIdentity);
@@ -114,7 +123,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
                     issuer: "https://test-issuer.com",
                     audience: Guid.NewGuid().ToString(),
                     claims: claimsIdentity.Claims,
-                    expires: DateTime.Now.AddMinutes(30),
+                    expires: DateTime.Now.AddHours(24),
                     signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Guid.NewGuid().ToString())),
                     SecurityAlgorithms.HmacSha256)
                 );

@@ -1,33 +1,62 @@
 ﻿@page "/ItemRequest"
 @using System.Globalization
+@using Application.Convertor
 @using Data.Context
 @using Domain.Dtos
 @using Domain.Entities
 @using Domain.Entities.User
 @using Microsoft.EntityFrameworkCore
 @using System.Security.Claims
+@using System.IdentityModel.Tokens.Jwt
+
 
 @inject BpcwebserverDbContext bpcwebserverDbContext
 @inject UnityDbContext UnityDbContext
 @inject IHttpContextAccessor HttpContextAccessor
 
+
 <PageTitle>درخواست کالا</PageTitle>
 
-<h5 class="text-end">تاریخ: @DateTime.Now.ToString("yyyy/MM/dd", CultureInfo.InvariantCulture)</h5>
+<div class="border p-3 mb-3">
+    <div class="row mb-2">
+        <div class="col-2 text-end fw-bold">تاریخ:</div>
+        <div class="col-2 text-end">@DateTime.Now.ToShamsi()</div>
 
-<!-- فرم ورود کالا -->
+        <div class="col-2 text-end fw-bold">نوع درخواست:</div>
+        <div class="col-2 text-end">ویژه</div>
+
+        <div class="col-2 text-end fw-bold">شماره درخواست:</div>
+        <div class="col-2 text-end">@HeaderModel.RequestCode</div>
+
+        <div class="col-2 text-end fw-bold">شرح حسابهای دریافتنی:</div>
+        <div class="col-2 text-end">@HeaderModel.Definition</div>
+
+        <div class="col-2 text-end fw-bold">کد حسابهای دریافتنی:</div>
+        <div class="col-2 text-end">@HeaderModel.DeliveryPlace</div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-2 text-end fw-bold">آدرس تحویل:</div>
+        <div class="col-10 text-end">@HeaderModel.Address</div>
+    </div>
+</div>
+
 <div class="border p-3 mb-3">
     <div class="row align-items-end">
         <div class="col-2">
             <label>کد کالا:</label>
             <input class="form-control"
-            type="number"
-            @bind-value="ProductCodeInput"
-            @bind-value:event="onchange" />
+            inputmode="numeric"
+            maxlength="5"
+            minlength="5"
+            @bind="ProductCodeInput"
+            @bind:event="oninput"
+            placeholder="مثلاً: 12345" />
         </div>
         <div class="col-2">
             <label>تعداد واحد کل:</label>
-            <input class="form-control" type="number" @bind="QuantityInput" />
+            <input class="form-control" inputmode="numeric" @bind="QuantityInput" />
         </div>
         <div class="col-2">
             <button class="btn btn-dark mt-3" @onclick="AddItem">ثبت</button>
@@ -71,65 +100,83 @@
 @code {
     private List<ItemRowViewModel> Items = new();
     private BranchUser Model = new();
+    private ItemHeaderModel HeaderModel = new();
 
-    private int _productCodeInput;
-    private int ProductCodeInput
+    private string _productCodeInput;
+    private string ProductCodeInput
     {
         get => _productCodeInput;
         set
         {
-            if (_productCodeInput != value)
+            if (value.ToString().All(char.IsDigit) && value.ToString().Length == 5)
             {
                 _productCodeInput = value;
                 _ = CheckProductAsync();
             }
+            else
+            {
+                _productCodeInput = value; 
+            }
         }
     }
-
     private int QuantityInput;
     private string ProductNamePreview = "";
 
+
     protected override async Task OnInitializedAsync()
-    {           //todo
-        var userCode = HttpContextAccessor.HttpContext?.User.Claims.Where(u => u.Type == ClaimTypes.Name).FirstOrDefault()?.Value;
+    {
+        string? accessToken = HttpContextAccessor.HttpContext?.Request.Cookies["access_token"];
+        if (string.IsNullOrWhiteSpace(accessToken))
+            return;
 
-        string? acctoken = HttpContextAccessor.HttpContext?.Request.Cookies["access_token"];
+        var handler = new JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(accessToken);
 
-        if (!string.IsNullOrWhiteSpace(userCode))
-        {
-            var now = DateTime.Now;
-            //ممکنه 2 تا بیاره
-            var userInfo = await UnityDbContext.BranchUsers
-                .Where(u => u.Name.Trim() == userCode.Trim())
-                .Select(u => new HeaderBranchDto
+        string? userName = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+        string? role = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+
+        if (string.IsNullOrWhiteSpace(userName))
+            return;
+        var persian = new CultureInfo("fa-IR");
+        persian.DateTimeFormat.Calendar = new PersianCalendar();
+
+        var now = DateTime.Now;
+
+        var userInfo = await UnityDbContext.BranchUsers
+            .Where(u => u.UserName.Trim() == userName.Trim())
+            .Select(u => new HeaderBranchDto
                 {
                     Date = now,
-                    RequestCode = Model.BranchCode+ now.ToString("yyMMdd") + now.ToString("HHmmss"),
+                    RequestCode = u.BranchCode + now.ToString("yyMMddHHmms", persian),
                     Address = u.Addr1,
                     DeliveryPlace = u.Code,
                     Definition = u.Definition_
                 })
-                .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync();
 
-
-
-
-            // if (userInfo != null)
+        if (userInfo != null)
+        {
+            HeaderModel = new ItemHeaderModel
+                {
+                    Date = userInfo.Date,
+                    RequestCode = userInfo.RequestCode,
+                    Address = userInfo.Address,
+                    DeliveryPlace = userInfo.DeliveryPlace,
+                    Definition = userInfo.Definition
+                };
         }
-
-
     }
 
     private async Task CheckProductAsync()
     {
         ProductNamePreview = "";
 
-        if (ProductCodeInput <= 0)
+        if (ProductCodeInput is null)
             return;
 
         var product = await bpcwebserverDbContext.Products
             .AsNoTracking()
-            .FirstOrDefaultAsync(p => p.ItemRef == ProductCodeInput);
+            .FirstOrDefaultAsync(p => p.ItemCode == ProductCodeInput);
 
         ProductNamePreview = product != null
             ? $"نام کالا: {product.ItemName}"
@@ -140,11 +187,12 @@
 
     private async Task AddItem()
     {
-        if (ProductCodeInput <= 0 || QuantityInput <= 0)
+        Console.WriteLine("بیا دیگه علی پروین");
+        if (ProductCodeInput is null || QuantityInput <= 0)
             return;
 
-        var product = await bpcwebserverDbContext.Products
-            .FirstOrDefaultAsync(p => p.ItemRef == ProductCodeInput);
+        var product = bpcwebserverDbContext.Products.AsEnumerable()
+        .FirstOrDefault(p => p.ItemCode.ToString().StartsWith(ProductCodeInput));
 
         if (product == null)
         {
@@ -154,7 +202,7 @@
 
         Items.Add(new ItemRowViewModel
             {
-                ProductCode = product.ItemRef,
+                ProductCode = product.ItemCode,
                 ProductName = product.ItemName,
                 Unit = product.UnitSetCode,
                 Quantity = QuantityInput,
@@ -162,7 +210,7 @@
                 NetWeight = QuantityInput * product.Width
             });
 
-        ProductCodeInput = 0;
+        ProductCodeInput = "";
         QuantityInput = 0;
         ProductNamePreview = "";
     }
@@ -183,7 +231,7 @@
 
     public class ItemRowViewModel
     {
-        public int ProductCode { get; set; }
+        public string ProductCode { get; set; }
         public string ProductName { get; set; }
         public string Unit { get; set; }
         public int Quantity { get; set; }
