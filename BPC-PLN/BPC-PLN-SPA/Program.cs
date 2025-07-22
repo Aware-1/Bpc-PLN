@@ -24,8 +24,9 @@ namespace BPC_PLN_SPA
 
             builder.Services.AddCascadingAuthenticationState();
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
-            builder.Services.AddSingleton<IReposiroryCharge, ReposiroryCharge>();
-            builder.Services.AddSingleton<IDispatchRipository, DispatchRipository>();
+            builder.Services.AddScoped<IReposiroryCharge, ReposiroryCharge>();
+            builder.Services.AddScoped<IDispatchRipository, DispatchRipository>();
+            builder.Services.AddScoped<IBranchRipository, BranchRipository>();
             builder.Services.AddHttpContextAccessor();
 
 

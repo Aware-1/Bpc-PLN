@@ -11,7 +11,7 @@ namespace Domain.Dtos
         [Required(ErrorMessage = " وارد کردن رمز اجباری است")]
         public string Password { get; set; }
         [Required(ErrorMessage = "انتخاب نوع ورود اجباری است")]
-        public DbAccessType AccessType { get; set; } = DbAccessType.Main;
+        public DbAccessType AccessType { get; set; } = DbAccessType.Branch;
 
     }
     public enum DbAccessType

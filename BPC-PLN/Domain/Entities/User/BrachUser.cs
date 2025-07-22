@@ -9,6 +9,7 @@
         public string Code { get; set; }
         public string Definition_ { get; set; }
         public string Addr1 { get; set; }
+        public string? Addr2 { get; set; }
         public string WareCode { get; set; }
         public string Name { get; set; }
     }

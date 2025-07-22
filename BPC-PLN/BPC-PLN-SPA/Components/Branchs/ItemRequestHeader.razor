@@ -1,0 +1,77 @@
+﻿@using Application.Convertor
+@using Data.Reposirory
+@using Domain.Dtos
+@using Domain.IRipository
+@inject IBranchRipository BranchRipository
+
+
+<div class="border p-3 mb-3">
+    <div class="row mb-2">
+        <div class="col-2 text-end fw-bold">تاریخ:</div>
+        <div class="col-2 text-end">@DateTime.Now.ToShamsi()</div>
+
+        <div class="col-2 text-end fw-bold">نوع درخواست:</div>
+        <div class="col-2 text-end">ویژه</div>
+
+        <div class="col-2 text-end fw-bold">شماره درخواست:</div>
+        <div class="col-2 text-end">@HeaderModel.RequestCode</div>
+
+        <div class="col-2 text-end fw-bold">کد حسابهای دریافتنی:</div>
+        <div class="col-2 text-end">@HeaderModel.DeliveryPlace</div>
+
+        <div class="col-3 text-end fw-bold">شرح حسابهای دریافتنی:</div>
+        <div class="col-4 text-end">@HeaderModel.Definition</div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-2 text-end fw-bold">آدرس تحویل:</div>
+        @if (!string.IsNullOrWhiteSpace(HeaderModel.Address2))
+        {
+            <div class="col-10">
+                <select class="form-select form-select-sm" @onchange="AddressChanged">
+                    <option value="@HeaderModel.Address">@HeaderModel.Address</option>
+                    <option value="@HeaderModel.Address2">@HeaderModel.Address2</option>
+                </select>
+            </div>
+        }
+        else
+        {
+            <div class="col-10 text-end">@HeaderModel.Address</div>
+        }
+    </div>
+</div>
+@code {
+    [Parameter]
+    public EventCallback<HeaderBranchDto> OnHeaderLoaded { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnAddressSelected { get; set; } 
+
+    private HeaderBranchDto HeaderModel = new();
+    private string SelectedAddress;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var userName = BranchRipository.GetUserName();
+        if (string.IsNullOrWhiteSpace(userName))
+            return;
+
+        HeaderModel = await BranchRipository.GetHeaderAsync(userName);
+
+        SelectedAddress = HeaderModel.Address;
+
+        if (OnAddressSelected.HasDelegate)
+            await OnAddressSelected.InvokeAsync(SelectedAddress);
+
+        if (OnHeaderLoaded.HasDelegate)
+            await OnHeaderLoaded.InvokeAsync(HeaderModel);
+    }
+
+    private async Task AddressChanged(ChangeEventArgs e)
+    {
+        SelectedAddress = e.Value?.ToString();
+        if (OnAddressSelected.HasDelegate)
+            await OnAddressSelected.InvokeAsync(SelectedAddress);
+    }
+}

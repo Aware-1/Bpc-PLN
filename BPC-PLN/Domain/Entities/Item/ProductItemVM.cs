@@ -1,14 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Domain.Dtos
+namespace Domain.Entities.Item
 {
     [Table("LG_006_ItemsConvfact")]
-    public class ProductItem
+    public class ProductItemVM
     {
         public string ItemCode { get; set; }
         public string ItemName { get; set; }
-        public decimal GrossWeight { get; set; }
-        public decimal Width { get; set; }
+        public double GrossWeight { get; set; }
+        public double Width { get; set; }
         public string UnitSetCode { get; set; }
     }
 

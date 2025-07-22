@@ -1,4 +1,4 @@
-﻿using Domain.Dtos;
+﻿using Domain.Entities.Item;
 using Domain.Entities.User;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,7 +8,9 @@ public class UnityDbContext : DbContext
 {
     public UnityDbContext(DbContextOptions<UnityDbContext> options) : base(options) { }
 
+
     public DbSet<BranchUser> BranchUsers { get; set; }
+
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -25,8 +27,20 @@ public class BpcwebserverDbContext : DbContext
 {
     public BpcwebserverDbContext(DbContextOptions<BpcwebserverDbContext> options) : base(options) { }
 
+
     public DbSet<LoginProvider> ProviderUsers { get; set; }
-    public DbSet<ProductItem> Products { get; set; }
+    public DbSet<ProductItemVM> Products { get; set; }
+    public DbSet<RequestOrderHeader> requestOrderHeaders { get; set; }
+    public DbSet<RequestOrderLine> requestOrderLines { get; set; }
 
+
+
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<ProductItemVM>().HasNoKey();
+
+        base.OnModelCreating(modelBuilder);
+
+    }
 }
-

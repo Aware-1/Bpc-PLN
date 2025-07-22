@@ -1,58 +1,34 @@
 ﻿@page "/ItemRequest"
-@using System.Globalization
 @using Application.Convertor
 @using Data.Context
 @using Domain.Dtos
-@using Domain.Entities
+@using Domain.Entities.Item
 @using Domain.Entities.User
 @using Microsoft.EntityFrameworkCore
-@using System.Security.Claims
-@using System.IdentityModel.Tokens.Jwt
-
-
 @inject BpcwebserverDbContext bpcwebserverDbContext
-@inject UnityDbContext UnityDbContext
 @inject IHttpContextAccessor HttpContextAccessor
+@inject IJSRuntime JS
+@inject NavigationManager NavigationManager
 
 
 <PageTitle>درخواست کالا</PageTitle>
 
-<div class="border p-3 mb-3">
-    <div class="row mb-2">
-        <div class="col-2 text-end fw-bold">تاریخ:</div>
-        <div class="col-2 text-end">@DateTime.Now.ToShamsi()</div>
 
-        <div class="col-2 text-end fw-bold">نوع درخواست:</div>
-        <div class="col-2 text-end">ویژه</div>
-
-        <div class="col-2 text-end fw-bold">شماره درخواست:</div>
-        <div class="col-2 text-end">@HeaderModel.RequestCode</div>
-
-        <div class="col-2 text-end fw-bold">شرح حسابهای دریافتنی:</div>
-        <div class="col-2 text-end">@HeaderModel.Definition</div>
-
-        <div class="col-2 text-end fw-bold">کد حسابهای دریافتنی:</div>
-        <div class="col-2 text-end">@HeaderModel.DeliveryPlace</div>
-
-    </div>
-
-    <div class="row">
-        <div class="col-2 text-end fw-bold">آدرس تحویل:</div>
-        <div class="col-10 text-end">@HeaderModel.Address</div>
-    </div>
-</div>
-
-<div class="border p-3 mb-3">
+<ItemRequestHeader 
+    OnHeaderLoaded="SetHeaderData"
+    OnAddressSelected="SetSelectedAddress" />
+<div class="border p-1 mb-2">
     <div class="row align-items-end">
         <div class="col-2">
             <label>کد کالا:</label>
             <input class="form-control"
-            inputmode="numeric"
-            maxlength="5"
-            minlength="5"
-            @bind="ProductCodeInput"
-            @bind:event="oninput"
-            placeholder="مثلاً: 12345" />
+                   inputmode="numeric"
+                   maxlength="5"
+                   minlength="5"
+                   @bind="ProductCodeInput"
+                   @bind:event="oninput"
+                   @onblur="GetProductPreview"
+                   placeholder="۵رقم" />
         </div>
         <div class="col-2">
             <label>تعداد واحد کل:</label>
@@ -70,172 +46,191 @@
 <table class="table table-bordered text-center">
     <thead class="table-secondary">
         <tr>
-            <th>حذف</th>
             <th>کد کالا</th>
             <th>شرح کالا</th>
             <th>واحد</th>
             <th>تعداد</th>
             <th>وزن ناخالص</th>
             <th>وزن خالص</th>
+            <th>حذف</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Items)
         {
             <tr>
-                <td>
-                    <button class="btn btn-sm btn-danger" @onclick="() => DeleteItem(item)">حذف</button>
-                </td>
                 <td>@item.ProductCode</td>
                 <td>@item.ProductName</td>
                 <td>@item.Unit</td>
                 <td>@item.Quantity</td>
                 <td>@item.GrossWeight</td>
                 <td>@item.NetWeight</td>
+                <td> <button class="btn btn-sm btn-danger" @onclick="() => DeleteItem(item)">حذف</button> </td>
             </tr>
         }
     </tbody>
 </table>
 
+<div class="d-flex position-fixed bottom-0 bg-white border align-items-center" style="gap: 10px;width:86%;">
+    <button type="submit" class="btn btn-outline-primary btn-lg ms-2" @onclick="Send">ارسال</button>
+
+    <label class="mb-0">تعداد واحد کل:</label>
+    <input type="text" disabled @bind="totalRequest.Quantity" class="form-control form-control-sm flex-grow-1" />
+
+    <label class="mb-0 ms-2">وزن ناخالص:</label>
+    <input type="text" disabled @bind="totalRequest.GrossWeight" class="form-control form-control-sm flex-grow-1" />
+
+    <label class="mb-0 ms-2">وزن خالص:</label>
+    <input type="text" disabled @bind="totalRequest.NetWeight" class="form-control form-control-sm flex-grow-1" />
+
+</div>
+
 @code {
     private List<ItemRowViewModel> Items = new();
-    private BranchUser Model = new();
-    private ItemHeaderModel HeaderModel = new();
+    private TotalRequest totalRequest = new();
 
-    private string _productCodeInput;
-    private string ProductCodeInput
-    {
-        get => _productCodeInput;
-        set
-        {
-            if (value.ToString().All(char.IsDigit) && value.ToString().Length == 5)
-            {
-                _productCodeInput = value;
-                _ = CheckProductAsync();
-            }
-            else
-            {
-                _productCodeInput = value; 
-            }
-        }
-    }
-    private int QuantityInput;
+    private string ProductCodeInput { get; set; } = "";
+    private int QuantityInput { get; set; }
     private string ProductNamePreview = "";
 
+    private HeaderBranchDto HeaderData = new();
+    private void SetHeaderData(HeaderBranchDto model) => HeaderData = model;
+    
+    private string SelectedAddress = ""; 
+    private void SetSelectedAddress(string address) => SelectedAddress = address;
 
-    protected override async Task OnInitializedAsync()
-    {
-        string? accessToken = HttpContextAccessor.HttpContext?.Request.Cookies["access_token"];
-        if (string.IsNullOrWhiteSpace(accessToken))
-            return;
-
-        var handler = new JwtSecurityTokenHandler();
-        var jwtToken = handler.ReadJwtToken(accessToken);
-
-        string? userName = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
-        string? role = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
-
-        if (string.IsNullOrWhiteSpace(userName))
-            return;
-        var persian = new CultureInfo("fa-IR");
-        persian.DateTimeFormat.Calendar = new PersianCalendar();
-
-        var now = DateTime.Now;
-
-        var userInfo = await UnityDbContext.BranchUsers
-            .Where(u => u.UserName.Trim() == userName.Trim())
-            .Select(u => new HeaderBranchDto
-                {
-                    Date = now,
-                    RequestCode = u.BranchCode + now.ToString("yyMMddHHmms", persian),
-                    Address = u.Addr1,
-                    DeliveryPlace = u.Code,
-                    Definition = u.Definition_
-                })
-            .FirstOrDefaultAsync();
-
-        if (userInfo != null)
-        {
-            HeaderModel = new ItemHeaderModel
-                {
-                    Date = userInfo.Date,
-                    RequestCode = userInfo.RequestCode,
-                    Address = userInfo.Address,
-                    DeliveryPlace = userInfo.DeliveryPlace,
-                    Definition = userInfo.Definition
-                };
-        }
-    }
-
-    private async Task CheckProductAsync()
-    {
-        ProductNamePreview = "";
-
-        if (ProductCodeInput is null)
-            return;
-
-        var product = await bpcwebserverDbContext.Products
-            .AsNoTracking()
-            .FirstOrDefaultAsync(p => p.ItemCode == ProductCodeInput);
-
-        ProductNamePreview = product != null
-            ? $"نام کالا: {product.ItemName}"
-            : "همچین محصولی پیدا نشد";
-
-        StateHasChanged();
-    }
 
     private async Task AddItem()
     {
-        Console.WriteLine("بیا دیگه علی پروین");
-        if (ProductCodeInput is null || QuantityInput <= 0)
-            return;
+        ProductNamePreview = "";
 
-        var product = bpcwebserverDbContext.Products.AsEnumerable()
-        .FirstOrDefault(p => p.ItemCode.ToString().StartsWith(ProductCodeInput));
+
+
+        if (ProductCodeInput.Length != 5 && !ProductCodeInput.All(char.IsDigit))
+        {
+            ProductNamePreview = "کد کالا به درستی وارد نشده است (فقط ۵ رقم عددی)";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(ProductCodeInput) || QuantityInput <= 0)
+        {
+            ProductNamePreview = "کد کالا و تعداد الزامی هستند";
+            return;
+        }
+
+        if (Items.Any(p => p.ProductCode.ToString().StartsWith(ProductCodeInput)))
+        {
+            ProductNamePreview = "این کالا قبلا ثبت شده است لطفا برای ویرایش تعداد سطر قبلی را حذف و تعداد دلخواه جدید را وارد نمایید";
+            ProductCodeInput = "";
+            QuantityInput = 0;
+            return;
+        }
+
+        var product = await bpcwebserverDbContext.Products
+             .FromSqlRaw("SELECT TOP 1 * FROM LG_006_ItemsConvfact WHERE LEFT(ITEMCODE, 5) = {0}", ProductCodeInput)
+             .AsNoTracking().FirstOrDefaultAsync();
 
         if (product == null)
         {
-            ProductNamePreview = "همچین محصولی پیدا نشد";
+            ProductNamePreview = "کالایی با این کد پیدا نشد";
             return;
         }
 
         Items.Add(new ItemRowViewModel
-            {
-                ProductCode = product.ItemCode,
-                ProductName = product.ItemName,
-                Unit = product.UnitSetCode,
-                Quantity = QuantityInput,
-                GrossWeight = QuantityInput * product.GrossWeight,
-                NetWeight = QuantityInput * product.Width
-            });
+        {
+            ProductCode = product.ItemCode,
+            ProductName = product.ItemName,
+            Unit = product.UnitSetCode,
+            Quantity = QuantityInput,
+            GrossWeight = QuantityInput * product.GrossWeight,
+            NetWeight = QuantityInput * product.Width
+        });
 
         ProductCodeInput = "";
         QuantityInput = 0;
         ProductNamePreview = "";
+        CalculateTotal();
     }
 
     private void DeleteItem(ItemRowViewModel item)
     {
         Items.Remove(item);
+        CalculateTotal();
     }
 
-    public class ItemHeaderModel
+    private async Task GetProductPreview()
     {
-        public DateTime Date { get; set; }
-        public string RequestCode { get; set; }
-        public string Address { get; set; }
-        public string Definition { get; set; }
-        public string DeliveryPlace { get; set; }
+
+        if (ProductCodeInput.Length != 5 || !ProductCodeInput.All(char.IsDigit))
+        {
+            ProductNamePreview = "کد کالا باید ۵ رقم عددی باشد";
+            return;
+        }
+
+        var product = await bpcwebserverDbContext.Products
+            .FromSqlRaw("SELECT TOP 1 * FROM LG_006_ItemsConvfact WHERE LEFT(ITEMCODE, 5) = {0}", ProductCodeInput)
+            .AsNoTracking().FirstOrDefaultAsync();
+
+        if (product == null)
+        {
+            ProductNamePreview = "کالایی با این کد یافت نشد";
+            return;
+        }
+
+        ProductNamePreview = product.ItemName;
     }
 
-    public class ItemRowViewModel
+    private void CalculateTotal()
     {
-        public string ProductCode { get; set; }
-        public string ProductName { get; set; }
-        public string Unit { get; set; }
-        public int Quantity { get; set; }
-        public decimal GrossWeight { get; set; }
-        public decimal NetWeight { get; set; }
+        totalRequest.Quantity = Items.Sum(x => x.Quantity).ToString();
+        totalRequest.GrossWeight = Items.Sum(x => x.GrossWeight).ToString("0.###");
+        totalRequest.NetWeight = Items.Sum(x => x.NetWeight).ToString("0.###");
     }
+
+    private async Task Send()
+    {
+        if (!Items.Any())
+        {
+            await JS.InvokeVoidAsync("alert", "هیچ آیتمی ثبت نشده است!");
+            return;
+        }
+
+        bool confirm = await JS.InvokeAsync<bool>("confirm", "آیا از ارسال درخواست مطمئن هستید؟");
+        if (!confirm)
+            return;
+
+        var header = new RequestOrderHeader
+        {
+            RequestNumber = HeaderData.RequestCode,
+            BranchCode = HeaderData.BranchCode,
+            BranchName = HeaderData.BranchName,
+            WareCode = HeaderData.WareCode, 
+            RequestDate = DateTime.Now.ToShamsi(),
+            RequestTime = DateTime.Now.ToString("HH:mm"),
+            RequestType = "ویژه",
+            DeliveryCode = HeaderData.DeliveryPlace,
+            DeliveryDefinition = HeaderData.Definition,
+            DeliveryAdd = SelectedAddress,
+            Lines = Items.Select(item => new RequestOrderLine
+            {
+                ItemCode = item.ProductCode,
+                ItemDefinition = item.ProductName,
+                Usc = item.Unit,
+                Amount = item.Quantity
+            }).ToList()
+        };
+
+
+        bpcwebserverDbContext.Add(header);
+        await bpcwebserverDbContext.SaveChangesAsync();
+
+        Items.Clear();
+        totalRequest = new();
+        await JS.InvokeVoidAsync("alert", "درخواست با موفقیت ثبت شد.");
+        NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+
+    }
+
+
+
 }
