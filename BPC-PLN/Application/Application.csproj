@@ -10,6 +10,7 @@
     <Folder Include="ExtentionMethod\" />
     <Folder Include="Generator\" />
     <Folder Include="Security\" />
+    <Folder Include="Utiliti\" />
   </ItemGroup>
 
   <ItemGroup>

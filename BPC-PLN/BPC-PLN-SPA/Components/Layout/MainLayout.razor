@@ -5,10 +5,14 @@
 
 <AuthorizeView>
     <Authorized>
-        <div class="page">
-            <div class="sidebar">
+        <div class="page" >
+            <div class="sidebar" style="@SidebarStyle">
                 <NavMenu />
             </div>
+
+            <div style="@ToggleButtonStyle" @onclick="() => isSidebarCollapsed = !isSidebarCollapsed">@* @(isSidebarCollapsed ? "▶" : "◀") *@</div>
+
+
             <main>
                 <article class="content px-4">
                     @Body
@@ -29,3 +33,12 @@
     </NotAuthorized>
 </AuthorizeView>
 
+@code {
+    private bool isSidebarCollapsed = false;
+
+    private string SidebarStyle => isSidebarCollapsed
+        ? "width: 0px; overflow: hidden; transition: width 0.3s;"
+        : "width: 190px; background-color: #f8f9fa; transition: width 0.3s;";
+
+    private string ToggleButtonStyle => "position: fixed; top: 0; right: 0; width: 7px; height: 100%; background-color: orange; cursor: pointer; z-index: 9999;";
+}

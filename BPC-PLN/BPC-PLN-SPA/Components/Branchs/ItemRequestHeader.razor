@@ -7,20 +7,13 @@
 
 <div class="border p-3 mb-3">
     <div class="row mb-2">
-        <div class="col-2 text-end fw-bold">تاریخ:</div>
-        <div class="col-2 text-end">@DateTime.Now.ToShamsi()</div>
+        <div class="row  text-end">
+            <div class="col-2"><strong>تاریخ:</strong> @DateTime.Now.ToShamsi()</div>
+            <div class="col-3"><strong>کد حسابهای دریافتنی:</strong> @HeaderModel.DeliveryPlace</div>
+            <div class="col-4"><strong>شرح حسابهای دریافتنی:</strong> @HeaderModel.Definition</div>
+            <div class="col-3"><strong>شماره درخواست:</strong> @HeaderModel.RequestCode</div>
+        </div>
 
-        <div class="col-2 text-end fw-bold">نوع درخواست:</div>
-        <div class="col-2 text-end">ویژه</div>
-
-        <div class="col-2 text-end fw-bold">شماره درخواست:</div>
-        <div class="col-2 text-end">@HeaderModel.RequestCode</div>
-
-        <div class="col-2 text-end fw-bold">کد حسابهای دریافتنی:</div>
-        <div class="col-2 text-end">@HeaderModel.DeliveryPlace</div>
-
-        <div class="col-3 text-end fw-bold">شرح حسابهای دریافتنی:</div>
-        <div class="col-4 text-end">@HeaderModel.Definition</div>
 
     </div>
 

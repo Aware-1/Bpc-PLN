@@ -66,3 +66,14 @@ h1:focus {
 body, h1, h2, h3, h4, h5, h6, button, input, textarea, select, label {
     font-family: 'sahel', sans-serif !important;
 }
+
+
+.btn-outline-orange {
+    color: orange;
+    border-color: orange;
+}
+
+    .btn-outline-orange:hover {
+        background-color: orange;
+        color: white;
+    }

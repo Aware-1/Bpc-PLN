@@ -34,17 +34,17 @@
             <label>تعداد واحد کل:</label>
             <input class="form-control" inputmode="numeric" @bind="QuantityInput" />
         </div>
-        <div class="col-2">
-            <button class="btn btn-dark mt-3" @onclick="AddItem">ثبت</button>
+        <div class="col-1 ">
+            <button class="btn btn-primary mt-3" @onclick="AddItem">ثبت</button>
         </div>
-        <div class="col-4 mt-2">
+        <div class="col-6 d-flex align-items-center justify-content-center">
             <label class="text-danger">@ProductNamePreview</label>
         </div>
     </div>
 </div>
 
 <table class="table table-bordered text-center">
-    <thead class="table-secondary">
+    <thead class="table-primary">
         <tr>
             <th>کد کالا</th>
             <th>شرح کالا</th>
@@ -71,8 +71,14 @@
     </tbody>
 </table>
 
+
+
+
+
 <div class="d-flex position-fixed bottom-0 bg-white border align-items-center" style="gap: 10px;width:86%;">
-    <button type="submit" class="btn btn-outline-primary btn-lg ms-2" @onclick="Send">ارسال</button>
+    <button type="submit" class="btn btn-outline-orange btn-lg ms-2" @onclick="Send">
+        ارسال
+    </button>
 
     <label class="mb-0">تعداد واحد کل:</label>
     <input type="text" disabled @bind="totalRequest.Quantity" class="form-control form-control-sm flex-grow-1" />
