@@ -10,7 +10,7 @@
                 <NavMenu />
             </div>
 
-            <div style="@ToggleButtonStyle" @onclick="() => isSidebarCollapsed = !isSidebarCollapsed">@* @(isSidebarCollapsed ? "▶" : "◀") *@</div>
+            <div style="@ToggleButtonStyle" @onclick="() => isSidebarCollapsed = !isSidebarCollapsed"></div>
 
 
             <main>
@@ -40,5 +40,11 @@
         ? "width: 0px; overflow: hidden; transition: width 0.3s;"
         : "width: 190px; background-color: #f8f9fa; transition: width 0.3s;";
 
-    private string ToggleButtonStyle => "position: fixed; top: 0; right: 0; width: 7px; height: 100%; background-color: orange; cursor: pointer; z-index: 9999;";
+
+    private string ToggleButtonStyle => isSidebarCollapsed
+        ? "position: fixed; top: 0; right: 0; width: 7px; height: 100%; background-color: orange; cursor: pointer; z-index: 9999;transition: right 0.3s;"
+        : "position: fixed; top: 0; right: 190px; width: 7px; height: 100%; background-color: orange; cursor: pointer; z-index: 9999;transition: right 0.3s;";
+
+
+   // private string ToggleButtonStyle2 => "position: fixed; top: 0; right: 0; width: 7px; height: 100%; background-color: orange; cursor: pointer; z-index: 9999;";
 }
