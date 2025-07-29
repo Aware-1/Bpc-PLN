@@ -22,85 +22,70 @@
                     ساخت بسته
                 </NavLink>
             </div>
-            <!-- #region name -->
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="ItemRequest" Match="NavLinkMatch.All">
+                درخواست کالا
+            </NavLink>
+        </div>
 
-            <div class="nav-item px-3">
-                <NavLink class="nav-link"  @onclick="ToggleReportMenu" style="cursor: pointer; white-space: nowrap;">
-                    گزارشات @(isExpandedReport ? "▲" : "◀")
-                </NavLink>
-            </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" @onclick="TogglePermissionMenu" style="cursor: pointer; white-space: nowrap;">
+                مدیریت کاربران @(isExpandedPermission ? "▲" : "◀")
+            </NavLink>
+        </div>
 
-            @if (isExpandedReport)
-            {
-                <div class="sub-menu">
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="7">| گزارشات حواله</NavLink>
-                    </div>
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link " href="8">| گزارشات بسته</NavLink>
-                    </div>
+        @if (isExpandedPermission)
+        {
+            <div class="sub-menu">
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="log">| لاگ</NavLink>
                 </div>
-            }
-
-            <!-- #endregion -->
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="1" Match="NavLinkMatch.All">
-                    اطلاعات شعب
-                </NavLink>
-            </div>
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="2" Match="NavLinkMatch.All">
-                    خواست های شعب
-                </NavLink>
-            </div>
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="3" Match="NavLinkMatch.All">
-                    اطلاعات  فروش
-                </NavLink>
-            </div>
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="4" Match="NavLinkMatch.All">
-                    TAP-Plan
-                </NavLink>
-            </div>
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="5" Match="NavLinkMatch.All">
-                    اطلاعات پایه
-                </NavLink>
-            </div>
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" @onclick="TogglePermissionMenu" style="cursor: pointer; white-space: nowrap;">
-                    مدیریت کاربران @(isExpandedPermission ? "▲" : "◀")
-                </NavLink>
-            </div>
-
-            @if (isExpandedPermission)
-            {
-                <div class="sub-menu">
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="log">| لاگ</NavLink>
-                    </div>
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link " href="permission">| دسترسی کاربران</NavLink>
-                    </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link " href="Roles">| دسترسی کاربران</NavLink>
                 </div>
-            }
-
-
-
-
-
-    <!-- #region branchs -->
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="ItemRequest" Match="NavLinkMatch.All">
-                    درخواست کالا
-                </NavLink>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link " href="permission">| سطوح دسترسی </NavLink>
+                </div>
             </div>
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="RegisteredReport" Match="NavLinkMatch.All">
-                    گزارش سفارشات اعمال شده
-                </NavLink>
+        }
+
+
+
+
+
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="RegisteredReport" Match="NavLinkMatch.All">
+                گزارش سفارشات اعمال شده
+            </NavLink>
+        </div>
+
+
+
+
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" @onclick="ToggleReportMenu" style="cursor: pointer; white-space: nowrap;">
+                گزارشات @(isExpandedReport ? "▲" : "◀")
+            </NavLink>
+        </div>
+
+        @if (isExpandedReport)
+        {
+            <div class="sub-menu">
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="7">| گزارشات حواله</NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link " href="8">| گزارشات بسته</NavLink>
+                </div>
             </div>
+        }
+
+
+
+     
+      
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="UnregisteredReport" Match="NavLinkMatch.All">
                   سفارشات اعمال  نشده
@@ -113,7 +98,6 @@
             </div>
 
 
-            <!-- #endregion -->
 
 
         </nav>

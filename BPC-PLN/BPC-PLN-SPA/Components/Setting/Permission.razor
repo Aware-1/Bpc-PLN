@@ -1,7 +1,39 @@
 ﻿@page "/permission"
 
-<h3>permission</h3>
+<PageTitle>سطح درسترسی</PageTitle>
+<h3 class="text-center mb-4">سطح درسترسی</h3>
+<hr />
+<div>
+
+    <div class="form-group mt-3">
+        <label for="dispatchType" class="form-label">نقش ها:</label>
+        <select id="dispatchType" class="form-select">
+            <option value="2">گزارشگیر ها</option>
+            <option value="1">اکبرلو ها</option>
+            <option value="3">چک کننده ها</option>
+        </select>
+        <div class="form-group text-center mt-3 justify-content-center">
+            <button type="submit" class="btn btn-outline-orange px-4">ثبت</button>
+        </div>
+    </div>
+    <hr />
+    <div class="d-flex flex-wrap col-12 mt-3">
+        @for (int u = 0; u < 10; u++)
+        {
+            <div class="form-check col-2 mb-3 ">
+                <div style="justify-content:flex-start;">
+                  @*<input type="checkbox" class="btn-check" id="btn-check-outlined" name="fuck-@u" autocomplete="off">
+                    <label class="btn btn-outline-primary" for="btn-check-outlined">Single toggle</label>*@
+                     <label class="form-check-label" for="checkChecked">ساخت بسته</label>
+                    <input class="form-check-input" type="checkbox" id="checkChecked" @(isCheckedList[u] ? "checked" : "" )>
+                </div>
+            </div>
+        }
+    </div>
+
+</div>
+
 
 @code {
-
+    List<bool> isCheckedList = Enumerable.Range(0, 30).Select(i => i % 3 == 0).ToList();
 }

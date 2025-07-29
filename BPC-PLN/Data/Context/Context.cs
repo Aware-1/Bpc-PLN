@@ -27,8 +27,9 @@ public class BpcwebserverDbContext : DbContext
 {
     public BpcwebserverDbContext(DbContextOptions<BpcwebserverDbContext> options) : base(options) { }
 
+    public DbSet<LoginBranchUser> LoginBranchUsers { get; set; }
 
-    public DbSet<LoginProvider> ProviderUsers { get; set; }
+    public DbSet<LoginProvider> LoginProviderUsers { get; set; }
     public DbSet<ProductItemVM> Products { get; set; }
     public DbSet<RequestOrderHeader> requestOrderHeaders { get; set; }
     public DbSet<RequestOrderLine> requestOrderLines { get; set; }
@@ -39,6 +40,7 @@ public class BpcwebserverDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<ProductItemVM>().HasNoKey();
+        modelBuilder.Entity<LoginBranchUser>().HasNoKey();
 
         base.OnModelCreating(modelBuilder);
 

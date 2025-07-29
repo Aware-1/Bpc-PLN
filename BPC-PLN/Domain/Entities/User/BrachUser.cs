@@ -1,4 +1,6 @@
-﻿namespace Domain.Entities.User
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Domain.Entities.User
 {
     public class BranchUser
     {
@@ -12,6 +14,17 @@
         public string? Addr2 { get; set; }
         public string WareCode { get; set; }
         public string Name { get; set; }
+    }
+
+
+    [Table("BPC_006_BranchUsers")]
+    public class LoginBranchUser
+    {
+        public int LogicalRef { get; set; } 
+        public string? UserName { get; set; }
+        public string? Password { get; set; } 
+        public string? BranchCode { get; set; } 
+        public string WareCode { get; set; } 
     }
 
 }

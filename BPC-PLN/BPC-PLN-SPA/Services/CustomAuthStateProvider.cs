@@ -63,7 +63,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
     {
         bool success = false;
         string role = "";
-        BranchUser branchUser = new();
+        LoginBranchUser branchUser = new();
         BranchUser providerUser = new();
 
         if (model is not null)
@@ -72,7 +72,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
             {
                 case DbAccessType.Branch:
 
-                    branchUser = _unityDb.BranchUsers.FirstOrDefault(u =>
+                    branchUser = _bpcwebserverDb.LoginBranchUsers.FirstOrDefault(u =>
                          u.UserName.Trim() == model.Username.Trim() &&
                          u.Password.Trim() == model.Password.Trim());
 
@@ -84,7 +84,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
                     }
                     break;
                 case DbAccessType.Provider:
-                    var user = _bpcwebserverDb.ProviderUsers.FirstOrDefault(u =>
+                    var user = _bpcwebserverDb.LoginProviderUsers.FirstOrDefault(u =>
                         u.Username.Trim() == model.Username.Trim() &&
                         u.Password.Trim() == model.Password.Trim());
 
@@ -108,14 +108,9 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
 
             if (success)
             {
-                string area = (role == "Branch" ? branchUser.BranchCode : providerUser.BranchCode).ToString();
-
                 var claimsIdentity = new ClaimsIdentity(
                     [
                     new Claim(ClaimTypes.Name, model.Username),
-                    new Claim(ClaimTypes.Role, role),
-                    new Claim("Code",area),
-
                     ]);
 
                 // generate a JWT token based on the claims

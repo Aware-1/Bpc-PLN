@@ -28,11 +28,7 @@ namespace Data.Reposirory
             return token?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
         }
 
-        public string? GetUserRole()
-        {
-            var token = GetToken();
-            return token?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
-        }
+      
 
         private JwtSecurityToken? GetToken()
         {
